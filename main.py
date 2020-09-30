@@ -42,7 +42,7 @@ def normalizeData(data):
     normalize_data = (data - mean)/np.std(data, axis=0)
     return normalize_data
 
-def boxplot(data, names):
+def boxPlot(data, names):
 
     plt.boxplot(data)
     plt.xticks(range(1, 14), names, rotation='vertical')
@@ -59,6 +59,25 @@ def correlationMatrix(data):
     
     return correlationMatrix
 
+def histogram(data,grid):
+    
+    plt.figure(figsize=(14,10))
+    plt.suptitle('Histogram', fontsize=20)
+    plt.subplots_adjust(left=0.125, right=0.9, bottom=0.1, top=0.9, wspace=0.2, hspace=0.5) #plot sizing adjustments
+    
+    #Subplot grid dimensions
+    dim = np.round(np.sqrt(grid))
+    row = dim
+    col = dim
+    cnt = 1
+
+    for i in range(M):   
+        plt.subplot(row, col, cnt)
+        plt.hist(data[:,i], bins = 36)
+        plt.title(attributeNames[i], fontsize=12)
+        cnt = cnt + 1
+    
+    plt.show()
     
 # =============================================================================
 #     MAIN
@@ -84,13 +103,15 @@ data = normalizeData(cent_data) #normalized data
 
 #%% Boxplot 
 
-boxplot(data, attributeNames[1:M+1]) #could use len(attributeNames) instead of M+1
+boxPlot(data, attributeNames[1:M+1]) #could use len(attributeNames) instead of M+1
 
 #%% Correlation Matrix
 
 correlationMatrix(data)
 
-#%% 
+#%% Histogram
+
+histogram(data,M)
 
 
 
