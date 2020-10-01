@@ -46,7 +46,7 @@ def normalizeData(data):
 def boxPlot(data, names):
 
     plt.boxplot(data)
-    plt.xticks((cols), names, rotation='vertical')
+    plt.xticks((cols, names, rotation='vertical')
     plt.title('Wine Data Boxplot')
     plt.show()
     
