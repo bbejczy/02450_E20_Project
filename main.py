@@ -23,14 +23,15 @@ def importData(filename):
     df = pd.read_csv(filename, header=None)    
     raw_data = df.to_numpy()
     
-    cols = range(1, 14)
+    cols = range(1, len(attributeNames)) #range object
+    
     X = raw_data[:, cols]
     y = raw_data[:,0]
     C = len(np.unique(y))
    
     N, M = X.shape
     
-    return raw_data,X,y,C,N,M
+    return raw_data,X,y,C,N,M, cols
     
 def centerData(data):
     mean = np.mean(data, axis=0)
@@ -45,7 +46,7 @@ def normalizeData(data):
 def boxPlot(data, names):
 
     plt.boxplot(data)
-    plt.xticks(range(1, 14), names, rotation='vertical')
+    plt.xticks((cols), names, rotation='vertical')
     plt.title('Wine Data Boxplot')
     plt.show()
     
@@ -53,7 +54,7 @@ def correlationMatrix(data):
     correlationMatrix = np.corrcoef(data) #Return Pearson product-moment correlation coefficients.
     data = pd.DataFrame(data).corr() #Compute pairwise correlation of columns, excluding NA/null values.
  
-    sn.heatmap(data, xticklabels=range(1,14), yticklabels=range(1,14), annot=True, annot_kws={"size":7})
+    sn.heatmap(data, xticklabels=cols, yticklabels=cols, annot=True, annot_kws={"size":7})
  
     plt.title('Wine Data Correlation Matrix', fontsize = 14)
     
@@ -92,7 +93,7 @@ attributeNames = ['ID','Alc', 'Mal-Ac', 'Ash', 'Al-Ash', 'Mg',\
 classNames = ['Clutivar1', 'Cultivar2','Clutivar3']
 
 
-raw_data,X,y,C,N,M = importData(filename) #importing the raw data from the file
+raw_data,X,y,C,N,M,cols = importData(filename) #importing the raw data from the file
 
 
 #%% Pre-processing the data
