@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import seaborn as sn
 from scipy.linalg import svd
 
-#from PCA_analysis import example
+# from PCA_analysis import 
 
 from matplotlib.pyplot import figure, plot, title, legend, xlabel, ylabel, show
 
