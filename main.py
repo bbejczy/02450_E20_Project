@@ -11,6 +11,8 @@ import matplotlib.pyplot as plt
 import seaborn as sn
 from scipy.linalg import svd
 
+#from PCA_analysis import example
+
 from matplotlib.pyplot import figure, plot, title, legend, xlabel, ylabel, show
 
 # =============================================================================
@@ -46,13 +48,13 @@ def normalizeData(data):
 def boxPlot(data, names):
 
     plt.boxplot(data)
-    plt.xticks((cols, names, rotation='vertical')
+    plt.xticks(cols, names, rotation='vertical')
     plt.title('Wine Data Boxplot')
     plt.show()
     
 def correlationMatrix(data):
-    correlationMatrix = np.corrcoef(data) #Return Pearson product-moment correlation coefficients.
-    data = pd.DataFrame(data).corr() #Compute pairwise correlation of columns, excluding NA/null values.
+    correlationMatrix = np.corrcoef(data)   #Return Pearson product-moment correlation coefficients.
+    data = pd.DataFrame(data).corr()        #Compute pairwise correlation of columns, excluding NA/null values.
  
     sn.heatmap(data, xticklabels=cols, yticklabels=cols, annot=True, annot_kws={"size":7})
  
@@ -93,7 +95,7 @@ attributeNames = ['ID','Alc', 'Mal-Ac', 'Ash', 'Al-Ash', 'Mg',\
 classNames = ['Clutivar1', 'Cultivar2','Clutivar3']
 
 
-raw_data,X,y,C,N,M,cols = importData(filename) #importing the raw data from the file
+raw_data,X,y,C,N,M,cols = importData(filename)      #importing the raw data from the file
 
 
 #%% Pre-processing the data
