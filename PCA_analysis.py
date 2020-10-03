@@ -6,13 +6,13 @@ Created on Thu Oct  1 15:01:39 2020
 """
 
 import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
+from dataProcessing import *
 
 # import sklearn.preprocessing
 
 from scipy.linalg import svd
-
+# from dataProcessing import *
 from matplotlib.pyplot import figure, plot, title, legend, xlabel, ylabel, show
 
 # =============================================================================
@@ -20,32 +20,32 @@ from matplotlib.pyplot import figure, plot, title, legend, xlabel, ylabel, show
 # =============================================================================
 
 
-def importData(filename):
-    df = pd.read_csv(filename, header=None)    
-    raw_data = df.to_numpy()
-    cols = range(1, len(attributeNames)) #range object
-    X = raw_data[:, cols]
-    y = raw_data[:,0]
-    C = len(np.unique(y))
-    N, M = X.shape
-    return raw_data,X,y,C,N,M,cols
+# def PCAimportData(filename):
+#     df = pd.read_csv(filename, header=None)    
+#     raw_data = df.to_numpy()
+#     cols = range(1, len(attributeNames)) #range object
+#     X = raw_data[:, cols]
+#     y = raw_data[:,0]
+#     C = len(np.unique(y))
+#     N, M = X.shape
+#     return raw_data,X,y,C,N,M,cols
     
-def centerData(data):
-    mean = np.mean(data, axis=0)
-    center_data = data - mean
-    return center_data
+# def PCAcenterData(data):
+#     mean = np.mean(data, axis=0)
+#     center_data = data - mean
+#     return center_data
 
-def standardizeData(data):
-    mean = np.mean(data, axis=0)
-    normalize_data = (data - mean)/np.std(data, axis=0)
-    return normalize_data
+# def PCAstandardizeData(data):
+#     mean = np.mean(data, axis=0)
+#     normalize_data = (data - mean)/np.std(data, axis=0)
+#     return normalize_data
    
-def EigenvaluePCA(X):
+def EigenvaluePCA(X_stand):
     # # Standardizing the features
     # std_scaler = sklearn.preprocessing.StandardScaler()
     # X_scaled = std_scaler.fit_transform(X)
     # Standardizing the features
-    X_stand = standardizeData(X)
+    # X_stand = standardizeData(X)
     # Covariance matrix
     features = X_stand.T
     cov_matrix = np.cov(features)
@@ -81,7 +81,7 @@ def plotVariance(rho):
     plt.show()
 
 
-def plot2DPCA(projected_data,PCx,PCy):
+def plot2DPCA(projected_data,PCx,PCy,C,y):
     plt.figure()
     for c in range(1,C+1):
         class_mask = (y==c)
@@ -94,7 +94,7 @@ def plot2DPCA(projected_data,PCx,PCy):
     plt.grid()
     plt.show()
     
-def plot3DPCA(projected_data,PCx,PCy,PCz):
+def plot3DPCA(projected_data,PCx,PCy,PCz,C,y):
     fig = plt.figure(figsize=(7,7))
     ax = fig.add_subplot(111, projection='3d')
     for c in range(1,C+1):
@@ -109,7 +109,7 @@ def plot3DPCA(projected_data,PCx,PCy,PCz):
     plt.grid()
     plt.show()
 
-def PCACoefficients(pcs,vectors):
+def PCACoefficients(pcs,vectors,M):
     legendStrs = ['PC'+str(e+1) for e in pcs]
     bw = 1/(len(pcs)+2)
     r = np.arange(1,M+1)
@@ -123,7 +123,7 @@ def PCACoefficients(pcs,vectors):
     plt.title('PCA Component Coefficients')
     plt.show()
     
-def PCAScatterPlot(projected_data,pcs):
+def PCAScatterPlot(projected_data,pcs,C,y):
     rows = len(pcs)
     cols = len(pcs)
     counter_endcount = rows*cols
@@ -138,6 +138,8 @@ def PCAScatterPlot(projected_data,pcs):
             for c in range(1,C+1):
                 class_mask = (y==c)
                 plt.plot(projected_data[class_mask,x_pointer], projected_data[class_mask,y_pointer],'o')
+                plt.xlim(-5,5)
+                plt.ylim(-5,5)
                 plt.grid()
             
                 # for axis labels
@@ -146,6 +148,7 @@ def PCAScatterPlot(projected_data,pcs):
                 for r in range(cols):    
                     if counter==rows*r+1:
                         plt.ylabel('PC{}'.format(y_pointer+1), fontsize=15)
+                
             counter=counter+1
     plt.suptitle('PCAs', fontsize=40)
     fig.legend(classNames, loc='upper right', fontsize=15)
@@ -155,84 +158,83 @@ def PCAScatterPlot(projected_data,pcs):
 #%% =============================================================================
 #     MAIN
 # =============================================================================
+
+
+
+if __name__ == '__main__':
     
-# Import data
-
-filename = '../02450_E20_Project/data/wine.data' #add the first folder in this line to the python workspace 
-
-attributeNames = ['ID','Alc', 'Mal-Ac', 'Ash', 'Al-Ash', 'Mg',\
-          'T-Phe', 'Flav', 'Nflav-Phe', 'PACs',\
-          'Col', 'Hue', 'OD280/315', 'Proline']
+    # Import data
     
-classNames = ['Clutivar1', 'Cultivar2','Clutivar3']
-
-
-raw_data,X,y,C,N,M,cols = importData(filename) #importing the raw data from the file
-
-
-# Standarize data
-X_stand = standardizeData(X)
-
-
-
-#%% with SVD
-rho,V = SVDPCA(X_stand)
-
-# plot "variance explained"
-plotVariance(rho)
-
-# Project the centered data onto principal component space
-Z = X_stand @ V
-
-#PCA Component coefficients
-pcs = [0,1,2]
-
-PCACoefficients(pcs,V)
-
-# Visualization over specific vectors
-PCx = 0
-PCy = 1
-PCz = 2
-
-# 2D
-plot2DPCA(Z,PCx,PCy)
-
-# 3D
-plot3DPCA(Z,PCx,PCy,PCz)
-
-
-
-#%% with Eigenvectors
-
-
-values, vectors, explained_variances = EigenvaluePCA(X)
-
-# plot "variance explained"
-plotVariance(explained_variances)
-
-# Project data on PCAs
-projected_data = X_stand @ vectors
-
-# PCA Component coefficients
-pcs = [3,1,2]
-
-PCACoefficients(pcs,vectors)
-
-# Visualization
-PCx = 0
-PCy = 1
-PCz = 2
-
-# 2D
-plot2DPCA(projected_data,PCx,PCy)
-
-# 3D
-plot3DPCA(projected_data,PCx,PCy,PCz)
-
-
-#%% ScatterPlot of all PCAs
-
-pcs = range(8)
-     
     
-PCAScatterPlot(projected_data,pcs)
+    raw_data,X,y,C,N,M,cols = importData(filename) #importing the raw data from the file
+    
+    
+    # Standarize data
+    X_stand = standardizeData(X)
+    
+    
+    
+    # #%% with SVD
+    # rho,V = SVDPCA(X_stand)
+    
+    # # plot "variance explained"
+    # plotVariance(rho)
+    
+    # # Project the centered data onto principal component space
+    # Z = X_stand @ V
+    
+    # #PCA Component coefficients
+    # pcs = range(13)
+    
+    # PCACoefficients(pcs,V)
+    
+    # # Visualization over specific vectors
+    # PCx = 0
+    # PCy = 1
+    # PCz = 2
+    
+    # # 2D
+    # plot2DPCA(Z,PCx,PCy)
+    
+    # # 3D
+    # plot3DPCA(Z,PCx,PCy,PCz)
+    
+    
+    
+    #%% with Eigenvectors
+    
+    
+    values, vectors, explained_variances = EigenvaluePCA(X_stand)
+    
+    # plot "variance explained"
+    plotVariance(explained_variances)
+    
+    # Project data on PCAs
+    projected_data = X_stand @ vectors
+    
+    # PCA Component coefficients
+    pcs = range(5)
+    
+    PCACoefficients(pcs,vectors)
+    
+    # Visualization
+    PCx = 0
+    PCy = 1
+    PCz = 2
+    
+    # 2D
+    plot2DPCA(projected_data,PCx,PCy)
+    
+    # 3D
+    plot3DPCA(projected_data,PCx,PCy,PCz)
+    
+    
+    #%% ScatterPlot of all PCAs
+    
+    pcs = range(8)
+         
+        
+    PCAScatterPlot(projected_data,pcs)
+    
+    
+    print('ran PCA analysis')

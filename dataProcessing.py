@@ -38,15 +38,36 @@ def standardizeData(data):
     normalize_data = (data - mean)/np.std(data, axis=0)
     return normalize_data
 
-# =============================================================================
-#     MAIN - change values after here
-# =============================================================================
+def stat(X):
+
+    mean_X = X.mean(axis=0)
+    std_X = X.std(axis=0)
+    median_X = np.median(X,axis=0)
+    min_X = X.min(axis=0)
+    max_X = X.max(axis=0)
+    less_than_25_X = np.quantile(X, .25, axis = 0)
+    less_than_75_X = np.quantile(X, .75, axis = 0)
+
+    return mean_X,std_X,median_X,min_X,max_X,less_than_25_X,less_than_75_X
+
+
 
 filename = '../02450_E20_Project/data/wine.data' #add the first folder in this line to the python workspace
-
-
+    
+    
 attributeNames = ['ID','Alc', 'Mal-Ac', 'Ash', 'Al-Ash', 'Mg',\
           'T-Phe', 'Flav', 'Nflav-Phe', 'PACs',\
           'Col', 'Hue', 'OD280/315', 'Proline']
     
 classNames = ['Clutivar1', 'Cultivar2','Clutivar3']
+
+# =============================================================================
+#     MAIN - change values after here
+# =============================================================================
+if __name__ == '__main__':
+    raw_data,X,y,C,N,M, cols = importData(filename)
+    
+    # stats
+    
+    mean_X,std_X,median_X,min_X,max_X,less_than_25_X,less_than_75_X = stat(X)
+    
