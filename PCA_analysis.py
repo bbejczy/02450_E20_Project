@@ -8,6 +8,7 @@ Created on Thu Oct  1 15:01:39 2020
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+
 # import sklearn.preprocessing
 
 from scipy.linalg import svd
@@ -82,9 +83,9 @@ def plotVariance(rho):
 
 def plot2DPCA(projected_data,PCx,PCy):
     plt.figure()
-    for c in cols:
+    for c in range(1,C+1):
         class_mask = (y==c)
-        plot(projected_data[class_mask,PCx], projected_data[class_mask,PCy],'o')
+        plt.plot(projected_data[class_mask,PCx], projected_data[class_mask,PCy],'o')
         
     plt.legend(classNames, loc='lower right')
     plt.xlabel('PC{}'.format(PCx+1))
@@ -96,9 +97,9 @@ def plot2DPCA(projected_data,PCx,PCy):
 def plot3DPCA(projected_data,PCx,PCy,PCz):
     fig = plt.figure(figsize=(7,7))
     ax = fig.add_subplot(111, projection='3d')
-    for c in cols:
+    for c in range(1,C+1):
         class_mask = (y==c)
-        plot(projected_data[class_mask,PCx], projected_data[class_mask, PCy], projected_data[class_mask,PCz],'o')
+        plt.plot(projected_data[class_mask,PCx], projected_data[class_mask, PCy], projected_data[class_mask,PCz],'o')
         
     plt.legend(classNames)
     ax.set_xlabel('PC{}'.format(PCx+1))
@@ -122,8 +123,36 @@ def PCACoefficients(pcs,vectors):
     plt.title('PCA Component Coefficients')
     plt.show()
     
+def PCAScatterPlot(projected_data,pcs):
+    rows = len(pcs)
+    cols = len(pcs)
+    counter_endcount = rows*cols
+    counter = 1
+    
+    fig = plt.figure(figsize=(12, 10))
+    plt.subplots_adjust(left=0.125, right=0.9, bottom=0.1, top=0.9, wspace=0.2, hspace=0.5) #plot sizing adjustments
 
-# =============================================================================
+    for y_pointer in pcs:
+        for x_pointer in pcs:
+            plt.subplot(rows,cols,counter)
+            for c in range(1,C+1):
+                class_mask = (y==c)
+                plt.plot(projected_data[class_mask,x_pointer], projected_data[class_mask,y_pointer],'o')
+                plt.grid()
+            
+                # for axis labels
+                if  counter > counter_endcount-cols: 
+                    plt.xlabel('PC{}'.format(x_pointer+1), fontsize=15)
+                for r in range(cols):    
+                    if counter==rows*r+1:
+                        plt.ylabel('PC{}'.format(y_pointer+1), fontsize=15)
+            counter=counter+1
+    plt.suptitle('PCAs', fontsize=40)
+    fig.legend(classNames, loc='upper right', fontsize=15)
+    plt.show()
+    
+
+#%% =============================================================================
 #     MAIN
 # =============================================================================
     
@@ -149,7 +178,7 @@ X_stand = standardizeData(X)
 #%% with SVD
 rho,V = SVDPCA(X_stand)
 
-# difference in explained plot comes from calculation of SVD vs Eigenvalues
+# plot "variance explained"
 plotVariance(rho)
 
 # Project the centered data onto principal component space
@@ -185,7 +214,7 @@ plotVariance(explained_variances)
 projected_data = X_stand @ vectors
 
 # PCA Component coefficients
-pcs = [0,1,2]
+pcs = [3,1,2]
 
 PCACoefficients(pcs,vectors)
 
@@ -201,3 +230,9 @@ plot2DPCA(projected_data,PCx,PCy)
 plot3DPCA(projected_data,PCx,PCy,PCz)
 
 
+#%% ScatterPlot of all PCAs
+
+pcs = range(8)
+     
+    
+PCAScatterPlot(projected_data,pcs)
