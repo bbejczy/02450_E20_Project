@@ -184,67 +184,67 @@ if __name__ == '__main__':
     
     
     
-    # #%% with SVD
-    # rho,V = SVDPCA(X_stand)
+    #%% with SVD
+    rho,V = SVDPCA(X_stand)
     
-    # # plot "variance explained"
-    # plotVariance(rho)
+    # plot "variance explained"
+    plotVariance(rho)
     
-    # # Project the centered data onto principal component space
-    # Z = X_stand @ V
+    # Project the centered data onto principal component space
+    Z = X_stand @ V
     
-    # #PCA Component coefficients
-    # pcs = range(13)
+    #PCA Component coefficients
+    pcs = range(5)
     
-    # PCACoefficients(pcs,V)
+    PCACoefficients(pcs,V,M)
     
-    # # Visualization over specific vectors
-    # PCx = 0
-    # PCy = 1
-    # PCz = 2
+    # Visualization over specific vectors
+    PCx = 0
+    PCy = 1
+    PCz = 2
     
-    # # 2D
-    # plot2DPCA(Z,PCx,PCy)
+    # 2D
+    plot2DPCA(Z,PCx,PCy,C,y)
     
-    # # 3D
-    # plot3DPCA(Z,PCx,PCy,PCz)
+    # 3D
+    plot3DPCA(Z,PCx,PCy,PCz,C,y)
     
     
     
     #%% with Eigenvectors
     
     
-    values, vectors, explained_variances = EigenvaluePCA(X_stand)
+    # values, vectors, explained_variances = EigenvaluePCA(X_stand)
     
-    # plot "variance explained"
-    plotVariance(explained_variances)
+    # # plot "variance explained"
+    # plotVariance(explained_variances)
     
-    # Project data on PCAs
-    projected_data = X_stand @ vectors
+    # # Project data on PCAs
+    # projected_data = X_stand @ vectors
     
-    # PCA Component coefficients
-    pcs = range(5)
+    # # PCA Component coefficients
+    # pcs = range(5)
     
-    PCACoefficients(pcs,vectors)
+    # PCACoefficients(pcs,vectors)
     
-    # Visualization
-    PCx = 0
-    PCy = 1
-    PCz = 2
+    # # Visualization
+    # PCx = 0
+    # PCy = 1
+    # PCz = 2
     
-    # 2D
-    plot2DPCA(projected_data,PCx,PCy)
+    # # 2D
+    # plot2DPCA(projected_data,PCx,PCy)
     
-    # 3D
-    plot3DPCA(projected_data,PCx,PCy,PCz)
+    # # 3D
+    # plot3DPCA(projected_data,PCx,PCy,PCz)
     
     
     #%% ScatterPlot of all PCAs
     
-    pcs = range(8)
+    pcs = range(5)
          
         
-    PCAScatterPlot(projected_data,pcs)
+    PCAScatterPlot(Z,pcs,C,y)
     
     
     print('ran PCA analysis')

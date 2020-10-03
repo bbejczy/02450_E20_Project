@@ -64,6 +64,7 @@ if __name__ == '__main__':
     # 2D
     plot2DPCA(projected_data,PCx,PCy,C,y)
     
+    
     # 3D
     plot3DPCA(projected_data,PCx,PCy,PCz,C,y)
     
