@@ -69,7 +69,7 @@ def SVDPCA(X_stand):
 def plotVariance(rho):
     threshold = 0.9
     # Plot variance explained
-    plt.figure()
+    fig = plt.figure()
     plt.plot(range(1,len(rho)+1),rho,'x-')
     plt.plot(range(1,len(rho)+1),np.cumsum(rho),'o-')
     plt.plot([1,len(rho)],[threshold, threshold],'k--')
@@ -79,10 +79,12 @@ def plotVariance(rho):
     plt.legend(['Individual','Cumulative','Threshold'])
     plt.grid()
     plt.show()
+    
+    fig.savefig('Plots/VarianceExplained.pdf')
 
 
 def plot2DPCA(projected_data,PCx,PCy,C,y):
-    plt.figure()
+    fig=plt.figure()
     for c in range(1,C+1):
         class_mask = (y==c)
         plt.plot(projected_data[class_mask,PCx], projected_data[class_mask,PCy],'o')
@@ -93,6 +95,8 @@ def plot2DPCA(projected_data,PCx,PCy,C,y):
     plt.title('PCs in 2 Dimenstions')
     plt.grid()
     plt.show()
+    
+    fig.savefig('Plots/2DPCA.pdf')
     
 def plot3DPCA(projected_data,PCx,PCy,PCz,C,y):
     fig = plt.figure(figsize=(7,7))
@@ -108,8 +112,11 @@ def plot3DPCA(projected_data,PCx,PCy,PCz,C,y):
     plt.title('PCs in 3 Dimenstions', fontsize=20)
     plt.grid()
     plt.show()
+    
+    fig.savefig('Plots/3DPCA.pdf')
 
 def PCACoefficients(pcs,vectors,M):
+    fig = plt.figure()
     legendStrs = ['PC'+str(e+1) for e in pcs]
     bw = 1/(len(pcs)+2)
     r = np.arange(1,M+1)
@@ -122,6 +129,8 @@ def PCACoefficients(pcs,vectors,M):
     plt.grid()
     plt.title('PCA Component Coefficients')
     plt.show()
+    
+    fig.savefig('Plots/PCACoefficients.pdf')
     
 def PCAScatterPlot(projected_data,pcs,C,y):
     rows = len(pcs)
@@ -154,6 +163,7 @@ def PCAScatterPlot(projected_data,pcs,C,y):
     fig.legend(classNames, loc='upper right', fontsize=15)
     plt.show()
     
+    fig.savefig('Plots/PCAScatter.pdf')
 
 #%% =============================================================================
 #     MAIN
