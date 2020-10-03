@@ -5,12 +5,9 @@ Created on Sat Sep 26 18:00:07 2020
 @author: bbejc, cm, matty
 """
 
-
 from dataVisualization import *
 from dataProcessing import *
-
-
-
+from pca_analysis import * 
 
 # =============================================================================
 #     MAIN
