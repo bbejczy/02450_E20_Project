@@ -9,6 +9,8 @@ from dataVisualization import *
 from dataProcessing import *
 from PCA_analysis import * 
 
+
+
 # =============================================================================
 #     MAIN
 # =============================================================================
@@ -35,13 +37,13 @@ if __name__ == '__main__':
     
     #%% Correlation Matrix
     
-    correlationMatrix(data, cols)
+    correlationMatrix(data, cols, attributeNames)
     
     #%% Histogram
     
     histogram(data,M, attributeNames) 
 
-    #%% with Eigenvectors
+    #%% PCA with Eigenvectors
     X_stand = standardizeData(X)
     values, vectors, explained_variances = EigenvaluePCA(X_stand)
     
@@ -64,12 +66,9 @@ if __name__ == '__main__':
     # 2D
     plot2DPCA(projected_data,PCx,PCy,C,y)
     
-    
     # 3D
     plot3DPCA(projected_data,PCx,PCy,PCz,C,y)
-    
-    
+
     # ScatterPlot of all PCAs
     
-        
     PCAScatterPlot(projected_data,pcs,C,y)

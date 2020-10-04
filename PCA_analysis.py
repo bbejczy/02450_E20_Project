@@ -211,8 +211,8 @@ if __name__ == '__main__':
     
     
     
-    #%% with Eigenvectors
-    
+    #%% with Eigenvectors - alternative approach, currently unused
+     
     
     # values, vectors, explained_variances = EigenvaluePCA(X_stand)
     
@@ -239,7 +239,7 @@ if __name__ == '__main__':
     # plot3DPCA(projected_data,PCx,PCy,PCz)
     
     
-    #%% ScatterPlot of all PCAs
+    #%% ScatterPlot of all PCAs 
     
     pcs = range(5)
          
