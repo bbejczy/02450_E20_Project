@@ -40,7 +40,7 @@ def correlationMatrix(data, coloumns, attributeNames):
     sn.set(font_scale=0.7)
     plt.gcf().subplots_adjust(bottom=0.15)
     sn.heatmap(data, xticklabels=attributeNames[1:], yticklabels=attributeNames[1:], annot=True, annot_kws={"size":7}, cmap="viridis")
-    corrMatFig.savefig('Plots/CorrelationMatrix.pdf')
+    corrMatFig.savefig('../Plots/CorrelationMatrix.pdf')
     
     return correlationMatrix
 
@@ -64,7 +64,7 @@ def histogram(data,grid, attributeNames):
         cnt = cnt + 1
     
     plt.show()
-    histFig.savefig('Plots/Histogram.pdf')
+    histFig.savefig('../Plots/Histogram.pdf')
     
 
     
