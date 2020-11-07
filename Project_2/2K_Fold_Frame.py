@@ -19,7 +19,7 @@ M = M+1
 
 ## Crossvalidation
 # Create crossvalidation partition for evaluation
-K = 5
+K = 10
 CV = model_selection.KFold(K, shuffle=True)
 #CV = model_selection.KFold(K, shuffle=False)
 
@@ -74,6 +74,8 @@ for train_index, test_index in CV.split(X,y):
     # Compute mean squared error with regularization with optimal lambda
     Error_train_rlr[k] = np.square(y_train-X_train @ w_rlr[:,k]).sum(axis=0)/y_train.shape[0]
     Error_test_rlr[k] = np.square(y_test-X_test @ w_rlr[:,k]).sum(axis=0)/y_test.shape[0]
+    
+    print("Error^test_rlr: ", Error_test_rlr[k])
 
     # Estimate weights for unregularized linear regression, on entire training set
     w_noreg[:,k] = np.linalg.solve(XtX,Xty).squeeze()
@@ -86,6 +88,8 @@ for train_index, test_index in CV.split(X,y):
     #Error_test[k] = np.square(y_test-m.predict(X_test)).sum()/y_test.shape[0]
 
     # Display the results for the last cross-validation fold
+    print("Error^test: ", Error_test[k])
+    print('Optimal value of lambda: ',opt_lambda)
     # if k == K-1:
     figure(k, figsize=(12,8))
     subplot(1,2,1)
