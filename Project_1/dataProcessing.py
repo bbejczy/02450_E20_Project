@@ -51,7 +51,7 @@ def stat(X):
 
 
 
-filename = '../02450_E20_Project/data/wine.data' #add the first folder in this line to the python workspace
+filename = '../Project_1/data/wine.data' #add the first folder in this line to the python workspace
     
     
 attributeNames = ['ID','Alc', 'Mal-Ac', 'Ash', 'Al-Ash', 'Mg',\

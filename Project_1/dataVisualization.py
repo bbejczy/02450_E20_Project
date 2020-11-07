@@ -28,7 +28,7 @@ def boxPlot(data, names, coloumns):
     plt.xticks(coloumns, names, rotation='vertical')
     plt.title('Wine Data Boxplot')
     plt.show()
-    boxPlotFig.savefig('Plots/BoxPlot.pdf')
+    boxPlotFig.savefig('../Plots/BoxPlot.pdf')
     
 def correlationMatrix(data, coloumns, attributeNames):
     
