@@ -80,7 +80,7 @@ def plotVariance(rho):
     plt.grid()
     plt.show()
     
-    fig.savefig('Plots/VarianceExplained.pdf')
+    fig.savefig('../Plots/VarianceExplained.pdf')
 
 
 def plot2DPCA(projected_data,PCx,PCy,C,y):
@@ -96,7 +96,7 @@ def plot2DPCA(projected_data,PCx,PCy,C,y):
     plt.grid()
     plt.show()
     
-    fig.savefig('Plots/2DPCA.pdf')
+    fig.savefig('../Plots/2DPCA.pdf')
     
 def plot3DPCA(projected_data,PCx,PCy,PCz,C,y):
     fig = plt.figure(figsize=(7,7))
@@ -113,7 +113,7 @@ def plot3DPCA(projected_data,PCx,PCy,PCz,C,y):
     plt.grid()
     plt.show()
     
-    fig.savefig('Plots/3DPCA.pdf')
+    fig.savefig('../Plots/3DPCA.pdf')
 
 def PCACoefficients(pcs,vectors,M):
     fig = plt.figure()
@@ -130,7 +130,7 @@ def PCACoefficients(pcs,vectors,M):
     plt.title('PCA Component Coefficients')
     plt.show()
     
-    fig.savefig('Plots/PCACoefficients.pdf')
+    fig.savefig('../Plots/PCACoefficients.pdf')
     
 def PCAScatterPlot(projected_data,pcs,C,y):
     rows = len(pcs)
@@ -163,7 +163,7 @@ def PCAScatterPlot(projected_data,pcs,C,y):
     fig.legend(classNames, loc='upper right', fontsize=15)
     plt.show()
     
-    fig.savefig('Plots/PCAScatter.pdf')
+    fig.savefig('../Plots/PCAScatter.pdf')
 
 #%% =============================================================================
 #     MAIN

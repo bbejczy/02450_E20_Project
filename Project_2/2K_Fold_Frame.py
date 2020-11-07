@@ -8,11 +8,9 @@ import sklearn.linear_model as lm
 from sklearn import model_selection
 from toolbox_02450 import rlr_validate
 
-mat_data = loadmat('../Data/body.mat')
-X = mat_data['X']
-y = mat_data['y'].squeeze()
-attributeNames = [name[0] for name in mat_data['attributeNames'][0]]
-N, M = X.shape
+from dataProcessing import *
+
+raw_data,X,y,C,N,M,cols = importData(filename) #importing the raw data from the file
 
 # Add offset attribute
 X = np.concatenate((np.ones((X.shape[0],1)),X),1)
