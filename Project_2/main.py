@@ -5,10 +5,16 @@ Created on Sat Sep 26 18:00:07 2020
 @author: bbejc, cm, matty
 """
 
-from dataVisualization import *
 from dataProcessing import *
+from dataVisualization import *
 from PCA_analysis import * 
-
+from matplotlib.pylab import (figure, semilogx, loglog, xlabel, ylabel, legend, 
+                           title, subplot, show, grid)
+import numpy as np
+from scipy.io import loadmat
+import sklearn.linear_model as lm
+from sklearn import model_selection
+from toolbox_02450 import rlr_validate
 
 
 # =============================================================================
@@ -26,49 +32,29 @@ if __name__ == '__main__':
     
     data = standardizeData(cent_data) #normalized data
    
-    #%% stats
+    #%% Crossvalidation
+    # Create crossvalidation partition for evaluation
+    K = 10
+    CV = model_selection.KFold(K, shuffle=True)
     
-    mean_X,std_X,median_X,min_X,max_X,less_than_25_X,less_than_75_X = stat(X)
-    
-    
-    #%% Boxplot 
-    
-    boxPlot(data, attributeNames[1:M+1], cols) #could use len(attributeNames) instead of M+1
-    
-    #%% Correlation Matrix
-    
-    correlationMatrix(data, cols, attributeNames)
-    
-    #%% Histogram
-    
-    histogram(data,M, attributeNames) 
+    # Initialize variables
 
-    #%% PCA with Eigenvectors
-    X_stand = standardizeData(X)
-    values, vectors, explained_variances = EigenvaluePCA(X_stand)
+    Error_test = np.empty((K,1))
+    opt_lambda = np.empty((K,1))
+    h =  np.empty((K,1))
     
-    # plot "variance explained"
-    plotVariance(explained_variances)
-    
-    # Project data on PCAs
-    projected_data = X_stand @ vectors
-    
-    # PCA Component coefficients
-    pcs = range(5)
-    
-    PCACoefficients(pcs,vectors,M)
-    
-    # Visualization
-    PCx = 0
-    PCy = 1
-    PCz = 2
-    
-    # 2D
-    plot2DPCA(projected_data,PCx,PCy,C,y)
-    
-    # 3D
-    plot3DPCA(projected_data,PCx,PCy,PCz,C,y)
-
-    # ScatterPlot of all PCAs
-    
-    PCAScatterPlot(projected_data,pcs,C,y)
+    k=0
+    for train_index, test_index in CV.split(X,y):
+        # extract training and test set for current CV fold
+        X_train = X[train_index]
+        y_train = y[train_index]
+        X_test = X[test_index]
+        y_test = y[test_index]
+        internal_cross_validation = 10 
+        
+        # Put here the models:
+        
+        
+        
+        # end of for-loop
+        k+=1

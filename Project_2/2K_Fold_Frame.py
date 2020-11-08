@@ -12,6 +12,12 @@ from dataProcessing import *
 
 
 def LinearRegression_Regression(X_train,y_train,X_test,y_test,k,K,internal_cross_validation):
+    
+    # @ Mat. you need this offset here below. 
+    # Add offset attribute
+    # X = np.concatenate((np.ones((X.shape[0],1)),X),1)
+    # attributeNames = [u'Offset']+attributeNames
+    # M = M+1
         
     Error_train = np.empty((K,1))
     Error_test = np.empty((K,1))
@@ -91,7 +97,7 @@ raw_data,X,y,C,N,M,cols = importData(filename) #importing the raw data from the 
 
 # Add offset attribute
 X = np.concatenate((np.ones((X.shape[0],1)),X),1)
-# attributeNames = [u'Offset']+attributeNames
+attributeNames = [u'Offset']+attributeNames
 M = M+1
 
 ## Crossvalidation
@@ -104,14 +110,14 @@ CV = model_selection.KFold(K, shuffle=True)
 lambdas = np.power(10.,range(-5,9))
 
 # Initialize variables
-#T = len(lambdas)
 
 Error_test = np.empty((K,1))
 opt_lambda = np.empty((K,1))
+h =  np.empty((K,1))
 
 k=0
 for train_index, test_index in CV.split(X,y):
-     # extract training and test set for current CV fold
+    # extract training and test set for current CV fold
     X_train = X[train_index]
     y_train = y[train_index]
     X_test = X[test_index]
