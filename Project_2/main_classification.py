@@ -8,6 +8,7 @@ Created on Sat Sep 26 18:00:07 2020
 from dataProcessing import *
 from dataVisualization import *
 from PCA_analysis import * 
+from baseline_classification import *
 from matplotlib.pylab import (figure, semilogx, loglog, xlabel, ylabel, legend, 
                            title, subplot, show, grid)
 import numpy as np
@@ -53,8 +54,8 @@ if __name__ == '__main__':
         internal_cross_validation = 10 
         
         # Put here the models:
-        
-        
+        Error_test = baseline_classification(X_train,y_train,internal_cross_validation)
+        print("Error_test^2: {0}%".format(Error_test*100))
         
         # end of for-loop
         k+=1
