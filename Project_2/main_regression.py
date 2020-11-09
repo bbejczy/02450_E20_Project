@@ -12,10 +12,7 @@ from baseline_regression import *
 from matplotlib.pylab import (figure, semilogx, loglog, xlabel, ylabel, legend, 
                            title, subplot, show, grid)
 import numpy as np
-from scipy.io import loadmat
-import sklearn.linear_model as lm
 from sklearn import model_selection
-from toolbox_02450 import rlr_validate
 
 
 # =============================================================================
@@ -41,6 +38,10 @@ if __name__ == '__main__':
     # Initialize variables
 
     Error_test = np.empty((K,1))
+    yhat = []
+    ytrue = []
+    
+    
     opt_lambda = np.empty((K,1))
     h =  np.empty((K,1))
     
@@ -56,10 +57,14 @@ if __name__ == '__main__':
         # Put here the models:
 
     
-        Error_test = baseline_regression(X_train,y_train,internal_cross_validation)
-    
+        Error_test, yhat, ytrue = baseline_regression(X,y,K_inner, yhat, ytrue)
+        
         print("Error_test^2: ", Error_test)
         
         
         # end of for-loop
         k+=1
+        
+#%% Statistical analysis
+
+

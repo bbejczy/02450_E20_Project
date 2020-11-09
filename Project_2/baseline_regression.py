@@ -15,9 +15,17 @@ def model_baseline_regression(y):
     y_est = np.empty(y.shape)
     y_est[:] = np.mean(y)
        
-    return y_est    
+    return y_est
 
-def baseline_regression(X,y,K_inner):
+def yest_to_yhat(y_est, y_test, yhat, ytrue):
+    
+    yhat = np.append(yhat,y_est)
+    ytrue = np.append(ytrue,y_test)
+    
+    
+    return yhat, ytrue    
+
+def baseline_regression(X,y,K_inner,yhat,ytrue):
     
     CV = model_selection.KFold(K_inner, shuffle=True)
     
@@ -33,16 +41,18 @@ def baseline_regression(X,y,K_inner):
         y_test = y[test_index]
         
         # Put here the models:
-        y_train_est = model_baseline_regression(y_train)
+        y_test_est = model_baseline_regression(y_test)
         
-        Error_test[k] = np.sum((y_train - y_train_est) ** 2)/len(y_train)
+        yhat, ytrue = yest_to_yhat(y_test_est, y_test, yhat, ytrue)
+        
+        Error_test[k] = np.sum((y_test - y_test_est) ** 2)/len(y_test)
         
         # end of for-loop
         k+=1
         
     Error_test_loop = np.mean(Error_test)
     
-    return Error_test_loop
+    return Error_test_loop,yhat, ytrue
 
 #%%
 
@@ -59,8 +69,10 @@ if __name__ == '__main__':
     #%% K-Fold-Validation
     
     K_inner = 10
+    yhat = []
+    ytrue = []
     
-    Error_test = baseline_regression(X,y,K_inner)
+    Error_test, yhat, ytrue = baseline_regression(X,y,K_inner, yhat, ytrue)
     
     print("Error_test^2: ", Error_test)
     

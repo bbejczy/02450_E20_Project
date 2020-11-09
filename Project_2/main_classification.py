@@ -4,18 +4,18 @@ Created on Sat Sep 26 18:00:07 2020
 
 @author: bbejc, cm, matty
 """
-
 from dataProcessing import *
 from dataVisualization import *
 from PCA_analysis import * 
 from baseline_classification import *
 from matplotlib.pylab import (figure, semilogx, loglog, xlabel, ylabel, legend, 
                            title, subplot, show, grid)
+
 import numpy as np
 from scipy.io import loadmat
 import sklearn.linear_model as lm
 from sklearn import model_selection
-from toolbox_02450 import rlr_validate
+from toolbox_02450 import rlr_validate, jeffrey_interval, mcnemar
 
 
 # =============================================================================
@@ -41,6 +41,9 @@ if __name__ == '__main__':
     # Initialize variables
 
     Error_test = np.empty((K,1))
+    yhat = []
+    ytrue = []
+    
     opt_lambda = np.empty((K,1))
     h =  np.empty((K,1))
     
@@ -54,8 +57,13 @@ if __name__ == '__main__':
         internal_cross_validation = 10 
         
         # Put here the models:
-        Error_test = baseline_classification(X_train,y_train,internal_cross_validation)
-        print("Error_test^2: {0}%".format(Error_test*100))
+        Error_test, yhat, ytrue = baseline_classification(X_train,y_train,internal_cross_validation, yhat, ytrue)
+        print("Error_test^2: {:.2f}%".format(Error_test*100))
+        
         
         # end of for-loop
         k+=1
+
+
+#%% Statistical evaluation
+
