@@ -9,6 +9,7 @@ from dataProcessing import *
 from dataVisualization import *
 from PCA_analysis import * 
 from baseline_regression import *
+from Statistical_evaluation import *
 from matplotlib.pylab import (figure, semilogx, loglog, xlabel, ylabel, legend, 
                            title, subplot, show, grid)
 import numpy as np
@@ -55,10 +56,7 @@ if __name__ == '__main__':
         internal_cross_validation = 10 
         
         # Put here the models:
-
-    
-        Error_test, yhat, ytrue = baseline_regression(X,y,K_inner, yhat, ytrue)
-        
+        Error_test, yhat, ytrue = baseline_regression(X_train,y_train,internal_cross_validation, yhat, ytrue)
         print("Error_test^2: ", Error_test)
         
         
@@ -67,4 +65,15 @@ if __name__ == '__main__':
         
 #%% Statistical analysis
 
+# Just an example until the all models are finished
+yhatA = yhat
+yhatB = np.random.randint(3, size = ytrue.shape)
+
+    
+# Compute accuracy
+evaluate_1_regression(ytrue,yhat)
+
+
+# Compare 2 models
+compare_2_regressions(ytrue,yhatA,yhatB)
 

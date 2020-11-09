@@ -8,9 +8,10 @@ from dataProcessing import *
 from dataVisualization import *
 from PCA_analysis import * 
 from baseline_classification import *
+from Statistical_evaluation import *
+
 from matplotlib.pylab import (figure, semilogx, loglog, xlabel, ylabel, legend, 
                            title, subplot, show, grid)
-
 import numpy as np
 from scipy.io import loadmat
 import sklearn.linear_model as lm
@@ -67,3 +68,13 @@ if __name__ == '__main__':
 
 #%% Statistical evaluation
 
+# Just an example until the all models are finished
+yhatA = yhat
+yhatB = np.random.randint(3, size = ytrue.shape)
+
+# evaluation of 1 model
+evaluate_1_classifier(ytrue,yhat)
+
+# Compare 2 models
+compare_2_classifiers(ytrue, yhatA, yhatB)
+    
