@@ -10,45 +10,27 @@ from toolbox_02450 import rlr_validate
 
 from dataProcessing import *
 
-raw_data,X,y,C,N,M,cols = importData(filename) #importing the raw data from the file
 
-# Add offset attribute
-X = np.concatenate((np.ones((X.shape[0],1)),X),1)
-attributeNames = [u'Offset']+attributeNames
-M = M+1
-
-## Crossvalidation
-# Create crossvalidation partition for evaluation
-K = 10
-CV = model_selection.KFold(K, shuffle=True)
-#CV = model_selection.KFold(K, shuffle=False)
-
-# Values of lambda
-lambdas = np.power(10.,range(-5,9))
-
-# Initialize variables
-#T = len(lambdas)
-Error_train = np.empty((K,1))
-Error_test = np.empty((K,1))
-Error_train_rlr = np.empty((K,1))
-Error_test_rlr = np.empty((K,1))
-Error_train_nofeatures = np.empty((K,1))
-Error_test_nofeatures = np.empty((K,1))
-w_rlr = np.empty((M,K))
-mu = np.empty((K, M-1))
-sigma = np.empty((K, M-1))
-w_noreg = np.empty((M,K))
-
-k=0
-for train_index, test_index in CV.split(X,y):
+def LinearRegression_Regression(X_train,y_train,X_test,y_test,k,K,internal_cross_validation):
     
-    # extract training and test set for current CV fold
-    X_train = X[train_index]
-    y_train = y[train_index]
-    X_test = X[test_index]
-    y_test = y[test_index]
-    internal_cross_validation = 10    
-    
+    # @ Mat. you need this offset here below. 
+    # Add offset attribute
+    # X = np.concatenate((np.ones((X.shape[0],1)),X),1)
+    # attributeNames = [u'Offset']+attributeNames
+    # M = M+1
+        
+    Error_train = np.empty((K,1))
+    Error_test = np.empty((K,1))
+    opt_lambda = np.empty((K,1))
+    Error_train_rlr = np.empty((K,1))
+    Error_test_rlr = np.empty((K,1))
+    Error_train_nofeatures = np.empty((K,1))
+    Error_test_nofeatures = np.empty((K,1))
+    w_rlr = np.empty((M,K))
+    mu = np.empty((K, M-1))
+    sigma = np.empty((K, M-1))
+    w_noreg = np.empty((M,K))    
+        
     opt_val_err, opt_lambda, mean_w_vs_lambda, train_err_vs_lambda, test_err_vs_lambda = rlr_validate(X_train, y_train, lambdas, internal_cross_validation)
 
     # Standardize outer fold based on training set, and save the mean and standard
@@ -75,7 +57,7 @@ for train_index, test_index in CV.split(X,y):
     Error_train_rlr[k] = np.square(y_train-X_train @ w_rlr[:,k]).sum(axis=0)/y_train.shape[0]
     Error_test_rlr[k] = np.square(y_test-X_test @ w_rlr[:,k]).sum(axis=0)/y_test.shape[0]
     
-    print("Error^test_rlr: ", Error_test_rlr[k])
+    # print("Error^test_rlr: ", Error_test_rlr[k])
 
     # Estimate weights for unregularized linear regression, on entire training set
     w_noreg[:,k] = np.linalg.solve(XtX,Xty).squeeze()
@@ -87,28 +69,62 @@ for train_index, test_index in CV.split(X,y):
     #Error_train[k] = np.square(y_train-m.predict(X_train)).sum()/y_train.shape[0]
     #Error_test[k] = np.square(y_test-m.predict(X_test)).sum()/y_test.shape[0]
 
-    # Display the results for the last cross-validation fold
-    print("Error^test: ", Error_test[k])
-    print('Optimal value of lambda: ',opt_lambda)
-    # if k == K-1:
-    figure(k, figsize=(12,8))
-    subplot(1,2,1)
-    semilogx(lambdas,mean_w_vs_lambda.T[:,1:],'.-') # Don't plot the bias term
-    xlabel('Regularization factor')
-    ylabel('Mean Coefficient Values')
-    grid()
-    # You can choose to display the legend, but it's omitted for a cleaner 
-    # plot, since there are many attributes
-    #legend(attributeNames[1:], loc='best')
+    # # Display the results for the last cross-validation fold
+    # print("Error^test: ", Error_test[k])
+    # print('Optimal value of lambda: ',opt_lambda)
+    # # if k == K-1:
+    # figure(k, figsize=(12,8))
+    # subplot(1,2,1)
+    # semilogx(lambdas,mean_w_vs_lambda.T[:,1:],'.-') # Don't plot the bias term
+    # xlabel('Regularization factor')
+    # ylabel('Mean Coefficient Values')
+    # grid()
+    # # You can choose to display the legend, but it's omitted for a cleaner 
+    # # plot, since there are many attributes
+    # #legend(attributeNames[1:], loc='best')
     
-    subplot(1,2,2)
-    title('Optimal lambda: 1e{0}'.format(np.log10(opt_lambda)))
-    loglog(lambdas,train_err_vs_lambda.T,'b.-',lambdas,test_err_vs_lambda.T,'r.-')
-    xlabel('Regularization factor')
-    ylabel('Squared error (crossvalidation)')
-    legend(['Train error','Validation error'])
-    grid()
+    # subplot(1,2,2)
+    # title('Optimal lambda: 1e{0}'.format(np.log10(opt_lambda)))
+    # loglog(lambdas,train_err_vs_lambda.T,'b.-',lambdas,test_err_vs_lambda.T,'r.-')
+    # xlabel('Regularization factor')
+    # ylabel('Squared error (crossvalidation)')
+    # legend(['Train error','Validation error'])
+    # grid()
+    
+    return opt_lambda, Error_test[k]
 
+raw_data,X,y,C,N,M,cols = importData(filename) #importing the raw data from the file
+
+# Add offset attribute
+X = np.concatenate((np.ones((X.shape[0],1)),X),1)
+attributeNames = [u'Offset']+attributeNames
+M = M+1
+
+## Crossvalidation
+# Create crossvalidation partition for evaluation
+K = 10
+CV = model_selection.KFold(K, shuffle=True)
+#CV = model_selection.KFold(K, shuffle=False)
+
+# Values of lambda
+lambdas = np.power(10.,range(-5,9))
+
+# Initialize variables
+
+Error_test = np.empty((K,1))
+opt_lambda = np.empty((K,1))
+h =  np.empty((K,1))
+
+k=0
+for train_index, test_index in CV.split(X,y):
+    # extract training and test set for current CV fold
+    X_train = X[train_index]
+    y_train = y[train_index]
+    X_test = X[test_index]
+    y_test = y[test_index]
+    internal_cross_validation = 10    
+   
+    opt_lambda[k], Error_test[k] = LinearRegression_Regression(X_train,y_train,X_test,y_test,k,K,internal_cross_validation)
     # To inspect the used indices, use these print statements
     #print('Cross validation fold {0}/{1}:'.format(k+1,K))
     #print('Train indices: {0}'.format(train_index))
@@ -118,19 +134,19 @@ for train_index, test_index in CV.split(X,y):
 
 show()
 # Display results
-print('Linear regression without feature selection:')
-print('- Training error: {0}'.format(Error_train.mean()))
-print('- Test error:     {0}'.format(Error_test.mean()))
-print('- R^2 train:     {0}'.format((Error_train_nofeatures.sum()-Error_train.sum())/Error_train_nofeatures.sum()))
-print('- R^2 test:     {0}\n'.format((Error_test_nofeatures.sum()-Error_test.sum())/Error_test_nofeatures.sum()))
-print('Regularized linear regression:')
-print('- Training error: {0}'.format(Error_train_rlr.mean()))
-print('- Test error:     {0}'.format(Error_test_rlr.mean()))
-print('- R^2 train:     {0}'.format((Error_train_nofeatures.sum()-Error_train_rlr.sum())/Error_train_nofeatures.sum()))
-print('- R^2 test:     {0}\n'.format((Error_test_nofeatures.sum()-Error_test_rlr.sum())/Error_test_nofeatures.sum()))
+# print('Linear regression without feature selection:')
+# print('- Training error: {0}'.format(Error_train.mean()))
+# print('- Test error:     {0}'.format(Error_test.mean()))
+# print('- R^2 train:     {0}'.format((Error_train_nofeatures.sum()-Error_train.sum())/Error_train_nofeatures.sum()))
+# print('- R^2 test:     {0}\n'.format((Error_test_nofeatures.sum()-Error_test.sum())/Error_test_nofeatures.sum()))
+# print('Regularized linear regression:')
+# print('- Training error: {0}'.format(Error_train_rlr.mean()))
+# print('- Test error:     {0}'.format(Error_test_rlr.mean()))
+# print('- R^2 train:     {0}'.format((Error_train_nofeatures.sum()-Error_train_rlr.sum())/Error_train_nofeatures.sum()))
+# print('- R^2 test:     {0}\n'.format((Error_test_nofeatures.sum()-Error_test_rlr.sum())/Error_test_nofeatures.sum()))
 
-print('Weights in last fold:')
-for m in range(M):
-    print('{:>15} {:>15}'.format(attributeNames[m], np.round(w_rlr[m,-1],2)))
+# print('Weights in last fold:')
+# for m in range(M):
+#     print('{:>15} {:>15}'.format(attributeNames[m], np.round(w_rlr[m,-1],2)))
 
-print('Ran Exercise 8.1.1')
+# print('Ran Exercise 8.1.1')
