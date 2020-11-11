@@ -26,13 +26,23 @@ import dataProcessing as dP
 
 
 raw_data,X,y,C,N,M,cols = importData(filename) #importing the raw data from the file
+attributeNames = [names for names in attributeNames if names != 'ID'  ]
 
-X = standardizeData(X)
+regression_attribute = 1
+y = X[:,regression_attribute]
+X_cols = list(range(0,regression_attribute)) + list(range(regression_attribute+1,len(attributeNames)))
+
+
+
+print('Regression on Attribute:',attributeNames[regression_attribute])
+X_without = X[:,X_cols]
+X = standardizeData(X_without)
 
 # Add offset attribute
 X = np.concatenate((np.ones((X.shape[0],1)),X),1)
-attributeNames = [u'Offset']+attributeNames
-M = M+1
+# # attributeNames = [u'Offset']+attributeNames
+# M = M+1
+M = len(X[0])
 
 
 #%% Regression Parameter
@@ -46,6 +56,7 @@ CV = model_selection.KFold(cvf, shuffle=True)
 w = np.empty((M,cvf,len(lambdas)))
 train_error = np.empty((cvf,len(lambdas)))
 test_error = np.empty((cvf,len(lambdas)))
+
 f = 0
 y = y.squeeze()
 for train_index, test_index in CV.split(X,y):
@@ -83,8 +94,13 @@ train_err_vs_lambda = np.mean(train_error,axis=0)
 test_err_vs_lambda = np.mean(test_error,axis=0)
 mean_w_vs_lambda = np.squeeze(np.mean(w,axis=1))
 
-Error_train = np.mean(train_error)
-Error_test = np.mean(test_error)
+Error_train_opt = np.min(train_err_vs_lambda)
+Error_test_opt = np.min(test_err_vs_lambda)
+
+print('\n')
+print('Regulistation Parameter:')
+print('Error train:', Error_train_opt)
+print('Error test:', Error_test_opt)
 
 # return opt_val_err, opt_lambda, mean_w_vs_lambda, train_err_vs_lambda, test_err_vs_lambda
 
@@ -98,7 +114,7 @@ ylabel('Mean Coefficient Values')
 grid()
 # You can choose to display the legend, but it's omitted for a cleaner 
 # plot, since there are many attributes
-#legend(attributeNames[1:], loc='best')
+legend([attributeNames[i] for i in X_cols], loc='best')
 
 subplot(1,2,2)
 title('Optimal lambda: 1e{0}'.format(np.log10(opt_lambda)))
@@ -112,8 +128,8 @@ grid()
 cvf = 10
 CV = model_selection.KFold(cvf, shuffle=True)
 f = 0
-Error_train_noReg = np.empty(cvf)
-Error_test_noReg = np.empty(cvf)
+error_train_noReg = np.empty(cvf)
+error_test_noReg = np.empty(cvf)
 
 for train_index, test_index in CV.split(X,y):
     X_train = X[train_index]
@@ -121,12 +137,18 @@ for train_index, test_index in CV.split(X,y):
     X_test = X[test_index]
     y_test = y[test_index]
     
-    
-    # X_train[:, 1:] = (X_train[:, 1:] - mu) / sigma
-    # X_test[:, 1:] = (X_test[:, 1:] - mu) / sigma
-        
     m = lm.LinearRegression().fit(X_train, y_train)
     y_train_est = m.predict(X_train)
     y_test_est = m.predict(X_test)
-    Error_train_noReg[f] = np.sum(np.square(y_train-y_train_est))/len(y_train)
-    Error_test_noReg[f] = np.sum(np.square(y_test-y_test_est))/len(y_test)
+    error_train_noReg[f] = (np.square(y_train-y_train_est)).sum()/len(y_train)
+    error_test_noReg[f] = np.sum(np.square(y_test-y_test_est))/len(y_test)
+
+    f=f+1
+    
+Error_train_noReg = np.mean(error_train_noReg)
+Error_test_noReg = np.mean(error_test_noReg)
+
+print('\n')
+print('Normal Regression without Regulisation parameter')
+print('Error train:', Error_train_noReg)
+print('Error test:', Error_test_noReg)

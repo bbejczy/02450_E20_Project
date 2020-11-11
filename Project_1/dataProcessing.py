@@ -10,9 +10,31 @@ import pandas as pd
 # =============================================================================
 # Function definitions
 # =============================================================================
-
+    
+def getData():
+    filename = '../Project_1/data/wine.data' #add the first folder in this line to the python workspace
+            
+    attributeNames = ['Alc', 'Mal-Ac', 'Ash', 'Al-Ash', 'Mg',\
+              'T-Phe', 'Flav', 'Nflav-Phe', 'PACs',\
+              'Col', 'Hue', 'OD280/315', 'Proline']
+        
+    classNames = ['Clutivar1', 'Cultivar2','Clutivar3']
+      
+    df = pd.read_csv(filename, header=None)    
+    raw_data = df.to_numpy()
+    
+    cols = range(1, len(attributeNames)+1) #range object
+    
+    X = raw_data[:, cols]
+    y = raw_data[:,0]
+    C = len(np.unique(y))
+   
+    N, M = X.shape
+    
+    return raw_data,X,y,C,N,M, cols,filename,attributeNames,classNames
 
 def importData(filename):
+    
       
     df = pd.read_csv(filename, header=None)    
     raw_data = df.to_numpy()
@@ -49,7 +71,16 @@ def stat(X):
 
     return mean_X,std_X,median_X,min_X,max_X,less_than_25_X,less_than_75_X
 
-
+def hardcodes():
+    filename = '../Project_1/data/wine.data' #add the first folder in this line to the python workspace
+    
+    
+    attributeNames = ['ID','Alc', 'Mal-Ac', 'Ash', 'Al-Ash', 'Mg',\
+              'T-Phe', 'Flav', 'Nflav-Phe', 'PACs',\
+              'Col', 'Hue', 'OD280/315', 'Proline']
+        
+    classNames = ['Clutivar1', 'Cultivar2','Clutivar3']
+    return filename,attributeNames,classNames
 
 filename = '../Project_1/data/wine.data' #add the first folder in this line to the python workspace
     
