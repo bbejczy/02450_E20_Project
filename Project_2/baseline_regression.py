@@ -11,7 +11,7 @@ from sklearn import model_selection
 from dataProcessing import *
 
 
-def model_baseline_regression(y):
+def baseline_regression_estimator(y):
     y_est = np.empty(y.shape)
     y_est[:] = np.mean(y)
        
@@ -23,11 +23,26 @@ def yest_to_yhat(y_est, y_test, yhat, ytrue):
     ytrue = np.append(ytrue,y_test)
     
     
-    return yhat, ytrue    
+    return yhat, ytrue
+    
+def baseline_regression_model(y_test):
+                
+        # Put here the models:
+            
+        y_test_est = baseline_regression_estimator(y_test)
+        
+        # yhat, ytrue = yest_to_yhat(y_test_est, y_test, yhat, ytrue)
+        
+        
+        Error_test = np.sum((y_test - y_test_est) ** 2)/len(y_test)
+        
+        return Error_test, y_test_est
+    
+       
 
 def baseline_regression(X,y,K_inner,yhat,ytrue):
     
-    CV = model_selection.KFold(K_inner, shuffle=True)
+    CV = model_selection.KFold(K_inner, shuffle=False)
     
     #init Variables
     Error_test = np.empty((K_inner,1))
@@ -35,17 +50,15 @@ def baseline_regression(X,y,K_inner,yhat,ytrue):
     k=0
     for train_index, test_index in CV.split(X,y):
         # extract training and test set for current CV fold
+        
         X_train = X[train_index]
         y_train = y[train_index]
         X_test = X[test_index]
         y_test = y[test_index]
         
-        # Put here the models:
-        y_test_est = model_baseline_regression(y_test)
-        
+        Error_test, y_test_est = baseline_regression_model(y_test) 
+       
         yhat, ytrue = yest_to_yhat(y_test_est, y_test, yhat, ytrue)
-        
-        Error_test[k] = np.sum((y_test - y_test_est) ** 2)/len(y_test)
         
         # end of for-loop
         k+=1
@@ -59,6 +72,13 @@ def baseline_regression(X,y,K_inner,yhat,ytrue):
 if __name__ == '__main__':
     
     raw_data,X,y,C,N,M,cols = importData(filename) #importing the raw data from the file
+    
+    #randomise the order
+    index = np.arange(0,len(X))
+    np.random.shuffle(index)
+    
+    X = X[index,:]
+    y = y[index]
     
     #%% Pre-processing the data
     

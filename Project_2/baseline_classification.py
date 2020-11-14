@@ -52,7 +52,7 @@ def baseline_classification(X,y,K_inner,yhat,ytrue):
 
     """
     
-    CV = model_selection.KFold(K_inner, shuffle=True)
+    CV = model_selection.KFold(K_inner, shuffle=False)
     
     #init Variables
     Error_test = np.empty((K_inner,1))

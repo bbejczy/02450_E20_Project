@@ -26,15 +26,18 @@ from sklearn.compose import ColumnTransformer
 
 #%% functions
 
-def Linear_Regression(X,y,cvf, yhat, ytrue):    
+def Linear_Regression(X,y,cvf, yhat, ytrue):
+
+        
     lambdas = np.power(10.,np.arange(-4,8,0.2))
-    coef = np.empty((cvf,len(X[1])))
+    # coef = np.empty((cvf,len(X[1])))
     
-    CV = model_selection.KFold(cvf, shuffle=True)
-    # M = X.shape[1]
+    CV = model_selection.KFold(cvf, shuffle=False)
+    M = X.shape[1]
     w = np.empty((M,cvf,len(lambdas)))
-    train_error = np.empty((cvf,len(lambdas)))
+    train_error = np.ones((cvf,len(lambdas)))
     test_error = np.empty((cvf,len(lambdas)))
+    
     
     f = 0
     y = y.squeeze()
@@ -51,6 +54,9 @@ def Linear_Regression(X,y,cvf, yhat, ytrue):
         # X_train[:, 1:] = (X_train[:, 1:] - mu) / sigma
         # X_test[:, 1:] = (X_test[:, 1:] - mu) / sigma
         
+        y_train_est = np.empty((len(lambdas),len(y_train))) 
+        y_test_est = np.empty((len(lambdas),len(y_test)))
+        
         # precompute terms
         Xty = X_train.T @ y_train
         XtX = X_train.T @ X_train
@@ -61,20 +67,22 @@ def Linear_Regression(X,y,cvf, yhat, ytrue):
             lambdaI[0,0] = 0 # remove bias regularization
             w[:,f,l] = np.linalg.solve(XtX+lambdaI,Xty).squeeze()
             
-            y_test_est = X_test @ w[:,f,l].T
-            y_train_est = X_train @ w[:,f,l].T
-            
-            yhat = np.append(yhat,y_train_est)
-            ytrue = np.append(ytrue,y_test)
+            y_test_est[l,:] = X_test @ w[:,f,l].T
+            y_train_est[l,:] = X_train @ w[:,f,l].T
             
             # Evaluate training and test performance
             train_error[f,l] = np.power(y_train-X_train @ w[:,f,l].T,2).mean(axis=0)
             test_error[f,l] = np.power(y_test-X_test @ w[:,f,l].T,2).mean(axis=0)
     
+        
+        opt_lambda_idx = np.argmin(test_error[f,:])
+            
+        yhat = np.append(yhat,y_train_est[opt_lambda_idx,:])
+        ytrue = np.append(ytrue,y_test_est[opt_lambda_idx,:])
+    
         f=f+1
         
         
-    
     opt_val_err = np.min(np.mean(test_error,axis=0))
     opt_lambda = lambdas[np.argmin(np.mean(test_error,axis=0))]
     train_err_vs_lambda = np.mean(train_error,axis=0)
@@ -83,6 +91,9 @@ def Linear_Regression(X,y,cvf, yhat, ytrue):
     
     Error_train_opt = np.min(train_err_vs_lambda)
     Error_test_opt = np.min(test_err_vs_lambda)
+    
+    
+    
     
     # print('\n')
     # print('Regulistation Parameter:')
@@ -115,7 +126,12 @@ def Linear_Regression(X,y,cvf, yhat, ytrue):
     return Error_test_opt, Error_train_opt, opt_lambda, yhat,ytrue
 
 def Linear_Regression_normal(X,y,cvf,yhat,ytrue):
-    CV = model_selection.KFold(cvf, shuffle=True)
+    
+    # Add offset to X
+    
+    X = np.concatenate((np.ones((X.shape[0],1)),X),1)
+    
+    CV = model_selection.KFold(cvf, shuffle=False)
     f = 0
     error_train_noReg = np.empty(cvf)
     error_test_noReg = np.empty(cvf)
@@ -149,53 +165,60 @@ def Linear_Regression_normal(X,y,cvf,yhat,ytrue):
     return Error_test_noReg, Error_train_noReg, yhat,ytrue
 
 #%% Import data 
-# features = range(0,13)
+if __name__ == '__main__':
 
-# for i in features:
+    # features = range(0,13)
     
-raw_data,X,y,C,N,M,cols = importData(filename) #importing the raw data from the file
-attributeNames = [names for names in attributeNames if names != 'ID'  ]
-
-
-
-columnTransformer = ColumnTransformer([('encoder', OneHotEncoder(), [0])], remainder='passthrough') 
-  
-raw_data = np.array(columnTransformer.fit_transform(raw_data), dtype = np.float)
-
-z = raw_data[:,[0,1,2]]
-
-regression_attribute = 10
-y = X[:,regression_attribute]
-X_cols = list(range(0,regression_attribute)) + list(range(regression_attribute+1,len(attributeNames)))
-
-
-
-print('Regression on Attribute:',attributeNames[regression_attribute])
-X_without = X[:,X_cols]
-X = standardizeData(X_without)
-
-# Add offset attribute
-X = np.concatenate((z,X),1)
-X = np.concatenate((np.ones((X.shape[0],1)),X),1)
-# # attributeNames = [u'Offset']+attributeNames
-# M = M+1
-M = len(X[0])
-
-y = standardizeData(y)
-
-#%% Regression Parameter
-
-cvf = 10
-ytrue = []
-yhat = []
-
-Error_test_opt, Error_train_opt, opt_lambda, yhat,ytrue =  Linear_Regression(X,y,cvf, yhat, ytrue)
-
-#%% Normal linear Regression without Regulisation parameter
-
-cvf = 10
-ytrue = []
-yhat = []
-
-
-Error_test, Error_train, yhat,ytrue = Linear_Regression_normal(X, y, cvf, yhat, ytrue)
+    # for i in features:
+        
+    raw_data,X,y,C,N,M, cols,filename,attributeNames,classNames = dP.getData() #importing the raw data from the file
+        
+    #randomise the order
+    index = np.arange(0,len(X))
+    np.random.shuffle(index)
+    
+    X = X[index,:]
+    y = y[index]
+    
+    
+    columnTransformer = ColumnTransformer([('encoder', OneHotEncoder(), [0])], remainder='passthrough') 
+      
+    raw_data = np.array(columnTransformer.fit_transform(raw_data), dtype = np.float)
+    
+    z = raw_data[:,[0,1,2]]
+    
+    regression_attribute = 10
+    y = X[:,regression_attribute]
+    X_cols = list(range(0,regression_attribute)) + list(range(regression_attribute+1,len(attributeNames)))
+    
+    
+    
+    print('Regression on Attribute:',attributeNames[regression_attribute])
+    X_without = X[:,X_cols]
+    X = standardizeData(X_without)
+    
+    # Add offset attribute
+    X = np.concatenate((z,X),1)
+    X = np.concatenate((np.ones((X.shape[0],1)),X),1)
+    # # attributeNames = [u'Offset']+attributeNames
+    # M = M+1
+    M = len(X[0])
+    
+    y = standardizeData(y)
+    
+    #%% Regression Parameter
+    
+    cvf = 10
+    ytrue = []
+    yhat = []
+    
+    Error_test_opt, Error_train_opt, opt_lambda, yhat,ytrue =  Linear_Regression(X,y,cvf, yhat, ytrue)
+    
+    #%% Normal linear Regression without Regulisation parameter
+    
+    cvf = 10
+    ytrue = []
+    yhat = []
+    
+    
+    Error_test, Error_train, yhat,ytrue = Linear_Regression_normal(X, y, cvf, yhat, ytrue)
