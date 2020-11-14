@@ -18,6 +18,9 @@ import sklearn.linear_model as lm
 from sklearn import model_selection
 from toolbox_02450 import rlr_validate, jeffrey_interval, mcnemar
 
+from ANN import *
+
+error_ANN = []
 
 # =============================================================================
 #     MAIN
@@ -36,7 +39,7 @@ if __name__ == '__main__':
    
     #%% Crossvalidation
     # Create crossvalidation partition for evaluation
-    K = 10
+    K = 5
     CV = model_selection.KFold(K, shuffle=True)
     
     # Initialize variables
@@ -51,6 +54,7 @@ if __name__ == '__main__':
     k=0
     for train_index, test_index in CV.split(X,y):
         # extract training and test set for current CV fold
+        print("CV fold ", k+1)
         X_train = X[train_index]
         y_train = y[train_index]
         X_test = X[test_index]
@@ -61,12 +65,16 @@ if __name__ == '__main__':
         Error_test, yhat, ytrue = baseline_classification(X_train,y_train,internal_cross_validation, yhat, ytrue)
         print("Error_test^2: {:.2f}%".format(Error_test*100))
         
+        error_ANN = ANN(K,X,y,M)
+        
+ 
         
         # end of for-loop
         k+=1
 
 
 #%% Statistical evaluation
+
 
 # Just an example until the all models are finished
 yhatA = yhat

@@ -9,17 +9,60 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.io import loadmat
 from sklearn import model_selection
-from toolbox_02450 import train_neural_net, draw_neural_net, visualize_decision_boundary
 import torch
+from torch import nn
+import torch.nn.functional as F
 from scipy import stats
-
 from dataProcessing import *
 
-raw_data,X,y,C,N,M,cols = importData(filename) #importing the raw data from the file
-K = 10
 # =============================================================================
 # Function definitions
 # =============================================================================
+
+def train_neural_net(model, loss_fn, X, y,
+                     n_replicates=3, max_iter = 10000, tolerance=1e-6):
+
+    # Specify maximum number of iterations for training
+    logging_frequency = 1000 # display the loss every 1000th iteration
+    best_final_loss = 1e100
+    for r in range(n_replicates):
+        net = model()
+        torch.nn.init.xavier_uniform_(net[0].weight)
+        torch.nn.init.xavier_uniform_(net[2].weight)
+                     
+        # We can optimize the weights by means of stochastic gradient descent
+        # The learning rate, lr, can be adjusted if training doesn't perform as
+        # intended try reducing the lr. If the learning curve hasn't converged
+        # (i.e. "flattend out"), you can try try increasing the maximum number of
+        # iterations, but also potentially increasing the learning rate:
+        #optimizer = torch.optim.SGD(net.parameters(), lr = 5e-3)
+        
+        # A more complicated optimizer is the Adam-algortihm, which is an extension
+        # of SGD to adaptively change the learing rate, which is widely used:
+        optimizer = torch.optim.Adam(net.parameters())
+
+        learning_curve = [] # setup storage for loss at each step
+        old_loss = 1e6
+        for i in range(max_iter):
+            y_est = net(X) # forward pass, predict labels on training set
+            loss = loss_fn(y_est, y) # determine loss
+            loss_value = loss.data.numpy() #get numpy array instead of tensor
+            learning_curve.append(loss_value) # record loss for later display
+            
+            # Convergence check, see if the percentual loss decrease is within
+            # tolerance:
+            p_delta_loss = np.abs(loss_value-old_loss)/old_loss
+            if p_delta_loss < tolerance: break
+            old_loss = loss_value
+            
+        
+        if loss_value < best_final_loss: 
+            best_net = net
+            best_final_loss = loss_value
+            best_learning_curve = learning_curve
+        
+    # Return the best curve along with its final loss and learing curve
+    return best_net, best_final_loss, best_learning_curve
 
 def ANN(K, X, y, M):
     
@@ -27,33 +70,15 @@ def ANN(K, X, y, M):
 
     # Normalize data
     X = stats.zscore(X)
-                    
-    ## Normalize and compute PCA (change to True to experiment with PCA preprocessing)
-    do_pca_preprocessing = False
-    if do_pca_preprocessing:
-        Y = stats.zscore(X,0)
-        U,S,V = np.linalg.svd(Y,full_matrices=False)
-        V = V.T
-        #Components to be included as features
-        k_pca = 3
-        X = X @ V[:,:k_pca]
-        N, M = X.shape
-    
-    
+                          
     # Parameters for neural network classifier
     n_hidden_units = 8     # number of hidden units
     n_replicates = 1        # number of networks trained in each k-fold
-    max_iter = 3000
+    max_iter = 10000
     
-    # K-fold crossvalidation
-    K = 10                  # only three folds to speed up this example
+
     CV = model_selection.KFold(K, shuffle=True)
-    
-    # Setup figure for display of learning curves and error rates in fold
-    summaries, summaries_axes = plt.subplots(1,2, figsize=(10,5))
-    # Make a list for storing assigned color of learning curve for up to K=10
-    color_list = ['tab:orange', 'tab:green', 'tab:purple', 'tab:brown', 'tab:pink',
-                  'tab:gray', 'tab:olive', 'tab:cyan', 'tab:red', 'tab:blue']
+
     # Define the model
     model = lambda: torch.nn.Sequential(
                         torch.nn.Linear(M, n_hidden_units), #M features to n_hidden_units
@@ -61,10 +86,13 @@ def ANN(K, X, y, M):
                         torch.nn.Linear(n_hidden_units, 1), # n_hidden_units to 1 output neuron
                         # no final tranfer function, i.e. "linear output"
                         )
+
+    
     loss_fn = torch.nn.MSELoss() # notice how this is now a mean-squared-error loss
     
-    print('Training model of type:\n\n{}\n'.format(str(model())))
+    # print('Training model of type:\n\n{}\n'.format(str(model())))
     errors = [] # make a list for storing generalizaition error in each loop
+    
     for (k, (train_index, test_index)) in enumerate(CV.split(X,y)): 
         print('\nCrossvalidation fold: {0}/{1}'.format(k+1,K))    
         
@@ -74,28 +102,45 @@ def ANN(K, X, y, M):
         X_test = torch.Tensor(X[test_index,:])
         y_test = torch.Tensor(y[test_index])
         
-        # Train the net on training data
+        # # Train the net on training data
+
         net, final_loss, learning_curve = train_neural_net(model,
-                                                           loss_fn,
-                                                           X=X_train,
-                                                           y=y_train,
-                                                           n_replicates=n_replicates,
-                                                           max_iter=max_iter)
-        
-        print('\n\tBest loss: {}\n'.format(final_loss))
-        
+                                                              loss_fn,
+                                                              X=X_train,
+                                                              y=y_train,
+                                                              n_replicates=n_replicates,
+                                                              max_iter=max_iter)
+                
         # Determine estimated class labels for test set
-        y_test_est = net(X_test)
+        y_sigmoid = net(X_test) # activation of final note, i.e. prediction of network
+        y_test_est = (y_sigmoid > .5).type(dtype=torch.uint8) # threshold output of sigmoidal function
+        y_test = y_test.type(dtype=torch.uint8)
+        # Determine errors and error rate
+        e = (y_test_est != y_test)
+        error_rate = (sum(e).type(torch.float)/len(y_test)).data.numpy()
+        errors.append(error_rate) # store error rate for current CV fold 
         
-        # Determine errors and errors
-        se = (y_test_est.float()-y_test.float())**2 # squared error
-        mse = (sum(se).type(torch.float)/len(y_test)).data.numpy() #mean
-        errors.append(mse) # store error rate for current CV fold 
+        yhat = y_test_est
+        ytrue = y_test
+        
         
     
-    return mse
+    return errors, yhat, ytrue
 
 
-error = ANN(K, X, y, M)
+#%%
+if __name__ == '__main__':
+    
+    raw_data,X,y,C,N,M,cols = importData(filename) #importing the raw data from the file
+    
+    #%% K-Fold-Validation
+    
+    K_inner = 10
+    yhat = []
+    ytrue = []
 
-print("error rate:",error)
+    errors, yhat, ytrue = ANN(K_inner, X, y, M)
+    
+    
+
+print(*errors)

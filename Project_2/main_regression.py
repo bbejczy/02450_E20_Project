@@ -9,6 +9,7 @@ from dataProcessing import *
 from dataVisualization import *
 from PCA_analysis import * 
 from baseline_regression import *
+from ANN_regression import *
 from Statistical_evaluation import *
 from matplotlib.pylab import (figure, semilogx, loglog, xlabel, ylabel, legend, 
                            title, subplot, show, grid)
@@ -57,6 +58,7 @@ if __name__ == '__main__':
         
         # Put here the models:
         Error_test, yhat, ytrue = baseline_regression(X_train,y_train,internal_cross_validation, yhat, ytrue)
+        #error = ANN_reg(X, y, M, attributenNames, classNames)
         print("Error_test^2: ", Error_test)
         
         
