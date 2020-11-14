@@ -119,7 +119,6 @@ def ANN_reg(X, y, M, attributenNames, classNames):
     
     return errors
 
-
 #%% Dummy main
 
 if __name__ == '__main__':
