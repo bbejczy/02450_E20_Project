@@ -23,6 +23,14 @@ import Classification_Logistic_Regression as LogReg
 
 import ANN_multiClass as ANN
 
+
+#supress warnings from tensorflow
+import sys
+import warnings
+
+if not sys.warnoptions:
+    warnings.simplefilter("ignore")
+
 # =============================================================================
 #     MAIN
 # =============================================================================

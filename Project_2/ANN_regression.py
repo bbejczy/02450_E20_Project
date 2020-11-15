@@ -48,8 +48,8 @@ def ANN_reg(X, y, M, attributenNames, classNames, K):
     M = X.shape[1]
     # Parameters for neural network classifier
     #n_hidden_units = 4      # number of hidden units
-    n_replicates = 10        # number of networks trained in each k-fold
-    max_iter = 1000
+    n_replicates = 4        # number of networks trained in each k-fold
+    max_iter = 3000
     
     yhat =[]
     
@@ -70,10 +70,10 @@ def ANN_reg(X, y, M, attributenNames, classNames, K):
     
     # print('Training model of type:\n\n{}\n'.format(str(model())))
     errors = [] # make a list for storing generalizaition error in each loop
-    h = range(2,9,2)
+    h = range(7,8,1)
     
     for (k, (train_index, test_index)) in enumerate(CV.split(X,y)): 
-        print("Run fold {}".format(k+1))
+        #print("Run fold {}".format(k+1))
         # print('\nCrossvalidation fold: {0}/{1}'.format(k+1,K))    
         counter = 0
         # Extract training and test set for current CV fold, convert to tensors
@@ -87,7 +87,7 @@ def ANN_reg(X, y, M, attributenNames, classNames, K):
         h_error_rate = np.empty(len(h))
         
         for n_hidden_units in h:
-            print("Run fold {0} with h {1}".format(k+1, n_hidden_units))
+            #print("Run fold {0} with h {1}".format(k+1, n_hidden_units))
             
             # Define the model
             model = lambda: torch.nn.Sequential(

@@ -36,7 +36,7 @@ def ANN_multiClass(X,y,K,C):
     CV = model_selection.KFold(K, shuffle=False)
     #%% Model fitting and prediction
     
-    h = range(2,9,2)
+    h = range(7,8,1)
     
     mat_error = np.zeros((K,len(h)))
     
@@ -87,7 +87,7 @@ def ANN_multiClass(X,y,K,C):
                                              X=torch.tensor(X_train, dtype=torch.float),
                                              y=torch.tensor(y_train, dtype=torch.long),
                                              n_replicates=1,
-                                             max_iter=10000)
+                                             max_iter=1000)
             # Determine probability of each class using trained network
             softmax_logits = net(torch.tensor(X_test, dtype=torch.float))
             

@@ -22,7 +22,12 @@ from sklearn import model_selection
 from sklearn.preprocessing import OneHotEncoder 
 from sklearn.compose import ColumnTransformer
 
+#supress warnings from tensorflow
+import sys
+import warnings
 
+if not sys.warnoptions:
+    warnings.simplefilter("ignore")
 
 # =============================================================================
 #     MAIN
@@ -68,7 +73,7 @@ if __name__ == '__main__':
     CV = model_selection.KFold(K, shuffle=True)
     
     # Initialize variables
-    modelNames = ['Baseline', 'Linear Regression with lambda', 'Decission Tree']
+    modelNames = ['Baseline', 'Linear Regression with lambda', 'Decission Tree','ANN']
     
     Error_test = np.empty((K,len(modelNames)))
     Error_train = np.empty((K,len(modelNames)))
