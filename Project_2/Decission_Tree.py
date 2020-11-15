@@ -13,7 +13,7 @@ from sklearn import metrics
 import numpy as np
 import dataProcessing as dP
 import matplotlib.pyplot as plt
-import graphviz
+# import graphviz
 
 #%% Funtions
 

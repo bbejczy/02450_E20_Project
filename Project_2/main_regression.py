@@ -10,8 +10,8 @@ import dataProcessing as DP
 # from PCA_analysis import * 
 import baseline_regression as BLR
 import Decission_Tree as dtree
-# from ANN_regression import *
 import Regulisation_Parameter as RG
+import ANN_regression as ANN
 import  Statistical_evaluation as stats
 from matplotlib.pylab import (figure, semilogx, loglog, xlabel, ylabel, legend, 
                            title, subplot, show, grid)
@@ -89,6 +89,8 @@ if __name__ == '__main__':
     ytrue = []  
     yhat = []
     
+    yhat_ANN = []
+    
     opt_lambda = np.empty((K,1))
     tc = np.empty((K,1))
     h =  np.empty((K,1))
@@ -129,6 +131,9 @@ if __name__ == '__main__':
         # print('Decission Tree:')
         # print("Error_test^2: ", Error_test[k,2], 'With tree depth:', tc[k])
        
+        # ANN Regression
+        Error_test[k, 3], h, yhat_temp = ANN.ANN_reg(X_train, y_train, M, attributeNames, classNames, K) 
+        yhat_ANN = np.append(yhat_ANN, yhat_temp)
         
         # end of for-loop
         k+=1
