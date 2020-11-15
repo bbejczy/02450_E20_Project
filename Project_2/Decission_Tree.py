@@ -67,13 +67,14 @@ def classifier_complexity(X,y, attributeNames, classNames):
     
     
     # plot errors
-    plt.figure()
-    plt.plot(tc, Error_train)
-    plt.plot(tc, Error_test)
-    plt.xlabel('Model complexity (max tree depth)')
-    plt.ylabel('Error (misclassification rate, CV K={0})'.format(K))
-    plt.legend(['Error_train','Error_test'])
-    plt.show()
+    # plt.figure()
+    # plt.plot(tc, Error_train,'x-')
+    # plt.plot(tc, Error_test,'x-')
+    # plt.xlabel('Model complexity (max tree depth)')
+    # plt.ylabel('Error (misclassification rate, CV K={0})'.format(K))
+    # plt.legend(['Error_train','Error_test'])
+    # plt.grid()
+    # plt.show()
     
     # decistion tree for best split
     
@@ -84,11 +85,11 @@ def classifier_complexity(X,y, attributeNames, classNames):
     # print('Error train opt:',Error_train[index_opt])
     
     # plot tree, not exactly the same but shape is right
-    classifier = DecisionTreeClassifier(max_depth= tc_opt)
-    classifier = classifier.fit(X_train,y_train)
-    plt.figure(dpi = 500)
-    plot_tree(classifier, filled=True, feature_names=attributeNames, class_names=classNames)
-    plt.show()
+    # classifier = DecisionTreeClassifier(max_depth= tc_opt)
+    # classifier = classifier.fit(X_train,y_train)
+    # plt.figure(dpi = 500)
+    # plot_tree(classifier, filled=True, feature_names=attributeNames, class_names=classNames)
+    # plt.show()
     
     # Errors
     # print('Mean Absolute Error:', metrics.mean_absolute_error(y_test, y_test_est))
@@ -204,13 +205,14 @@ def regressor_complexity(X,y,attributeNames,classNames):
     
     
     # plot errors
-    plt.figure()
-    plt.plot(tc, Error_train)
-    plt.plot(tc, Error_test)
-    plt.xlabel('Model complexity (max tree depth)')
-    plt.ylabel('MSE for K={0} CV)'.format(K))
-    plt.legend(['Error_train','Error_test'])
-    plt.show()
+    # plt.figure()
+    # plt.plot(tc, Error_train,'x-')
+    # plt.plot(tc, Error_test,'x-')
+    # plt.xlabel('Model complexity (max tree depth)')
+    # plt.ylabel('MSE for K={0} CV)'.format(K))
+    # plt.legend(['Error_train','Error_test'])
+    # plt.grid()
+    # plt.show()
     
     # decistion tree for best split
     
@@ -221,11 +223,11 @@ def regressor_complexity(X,y,attributeNames,classNames):
     # print('Error train opt:',Error_train[index_opt])
     
     # plot tree, not exactly the same but shape is right
-    regressor = DecisionTreeRegressor(max_depth= tc_opt)
-    regressor = regressor.fit(X_train,y_train)
-    plt.figure(dpi = 500)
-    plot_tree(regressor, filled=True, feature_names=attributeNames)#, class_names=classNames)
-    plt.show()
+    # regressor = DecisionTreeRegressor(max_depth= tc_opt)
+    # regressor = regressor.fit(X_train,y_train)
+    # plt.figure(dpi = 500)
+    # plot_tree(regressor, filled=True, feature_names=attributeNames)#, class_names=classNames)
+    # plt.show()
     
     # Graphviz
     # Creates dot file named tree.dot
@@ -328,6 +330,15 @@ if __name__ == '__main__':
     
     #%% import data
     raw_data,X,y,C,N,M, cols,filename,attributeNames,classNames = dP.getData()
+    
+    #randomise the order
+    index = np.arange(0,len(X))
+    np.random.shuffle(index)
+    
+    X = X[index,:]
+    y = y[index]
+    
+    # Standardise Data
     X = dP.standardizeData(X)
     
     #%% Classification

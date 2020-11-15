@@ -18,11 +18,11 @@ def accuracy_classificaion(ytrue, yhat):
     errors = np.sum(yhat != ytrue)
     # accuracy: 1accuracy = total correct predictions / total predictions made * 100
     accuracy = (len(ytrue)-errors) / len(ytrue) * 100
-    print('\n')
+    # print('\n')
     print('The accuracy of is: {0}%'.format(accuracy))
         
     # with sklearn
-    print('\n')
+    # print('\n')
     accuracy_sklearn = accuracy_score(ytrue, yhat)
     print('Accuary Score:')
     print(accuracy_sklearn)
@@ -36,13 +36,13 @@ def accuracy_classificaion(ytrue, yhat):
     # this responds to Classification report: recall.
     
 def evaluate_1_classifier(ytrue,yhat):
-    print('\n')    
+    # print('\n')    
     accuracy_classificaion(ytrue,yhat)
     
     # Compute the Jeffreys interval
     alpha = 0.05
     
-    print('\n')
+    # print('\n')
     print('Jeffrey Interval for alpha={}:'.format(alpha))
     [thetahatA, CIA] = jeffrey_interval(ytrue, yhat, alpha=alpha)
     
@@ -52,7 +52,7 @@ def compare_2_classifiers(ytrue, yhatA, yhatB):
     # Compute the McNemar test
     alpha = 0.05
     [thetahat, CI, p] = mcnemar(ytrue, yhatA, yhatB, alpha=alpha)
-    print('\n')
+    # print('\n')
     print("theta = theta_A-theta_C point estimate", thetahat, " CI: ", CI, "p-value", p)
     
     # thetaA denote the (true) chance classier MA is correct and thetaB the (true) chance classier MB is correct
@@ -66,7 +66,7 @@ def compare_2_classifiers(ytrue, yhatA, yhatB):
     # return thetahat, CI, p
     
 def evaluate_1_regression(ytrue,yhat):
-    print('\n')
+    # print('\n')
     z = np.abs(ytrue - yhat ) ** 2
     error_measure = (np.sum(z))/ len(ytrue)
     print('Estimated error z:',error_measure)
@@ -79,7 +79,7 @@ def evaluate_1_regression(ytrue,yhat):
     print("R-squared score:", accuracy_measure)
 
 def compare_2_regressions(ytrue,yhatA,yhatB):
-    print('\n')
+    # print('\n')
     # compute z with squared error.
     zA = np.abs(ytrue - yhatA ) ** 2
     zB = np.abs(ytrue - yhatB ) ** 2

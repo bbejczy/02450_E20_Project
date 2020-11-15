@@ -78,6 +78,10 @@ if __name__ == '__main__':
     
     yhat_BLR = []
     ytrue_BLR = []
+    
+    yhat_LRR = []
+    ytrue_LRR = []
+    
 
     yhat_tree = []
     ytrue_tree = []
@@ -86,10 +90,13 @@ if __name__ == '__main__':
     yhat = []
     
     opt_lambda = np.empty((K,1))
+    tc = np.empty((K,1))
     h =  np.empty((K,1))
     
     k=0
     for train_index, test_index in CV.split(X,y):
+        print('\n')
+        print("CV fold ", k+1)
         # extract training and test set for current CV fold
         X_train = X[train_index]
         y_train = y[train_index]
@@ -101,42 +108,57 @@ if __name__ == '__main__':
         Error_test[k,0], yhat_temp, ytrue_temp = BLR.baseline_regression(X_train,y_train,internal_cross_validation, yhat, ytrue)
         yhat_BLR = np.append(yhat_BLR,yhat_temp)
         ytrue_BLR = np.append(ytrue_BLR,ytrue_temp)
-        print('\n')
-        print('Baseline Regression')
-        print("Error_test^2: ", Error_test[k,0])
+        # print('\n')
+        # print('Baseline Regression')
+        # print("Error_test^2: ", Error_test[k,0])
         
         # Regression with Regulisation Parameter lambda
-        Error_test[k,1], Error_train[k,1], opt_lambda, yhat_temp,ytrue_temp =  RG.Linear_Regression(X_train,y_train,internal_cross_validation, yhat, ytrue)
-        yhat_LRR = np.append(yhat_BLR,yhat_temp)
-        ytrue_LRR = np.append(ytrue_BLR,ytrue_temp)
-        print('\n')
-        print('Linear Regression with Regulisation Parameter')
-        print("Error_test^2: ", Error_test[k,1], 'With lambda opt:', opt_lambda)
+        Error_test[k,1], Error_train[k,1], opt_lambda[k], yhat_temp,ytrue_temp =  RG.Linear_Regression(X_train,y_train,internal_cross_validation, yhat, ytrue)
+        yhat_LRR = np.append(yhat_LRR,yhat_temp)
+        ytrue_LRR = np.append(ytrue_LRR,ytrue_temp)
+        # print('\n')
+        # print('Linear Regression with Regulisation Parameter')
+        # print("Error_test^2: ", Error_test[k,1], 'With lambda opt:', opt_lambda[k])
         
         # Decission Tree 
-        tc = dtree.regressor_complexity(X_train,y_train, attributeNames, classNames)
-        Error_train[k,2],Error_test[k,2],yhat_temp,ytrue_temp = dtree.regressor_model(X_train,y_train,K,yhat,ytrue,tc)
+        tc[k] = dtree.regressor_complexity(X_train,y_train, attributeNames, classNames)
+        Error_train[k,2],Error_test[k,2],yhat_temp,ytrue_temp = dtree.regressor_model(X_train,y_train,K,yhat,ytrue,tc[k])
         yhat_tree = np.append(yhat_tree,yhat_temp)
         ytrue_tree = np.append(ytrue_tree,ytrue_temp)
-        print('\n')
-        print('Decission Tree:')
-        print("Error_test^2: ", Error_test[k,2], 'With tree depth:', tc)
+        # print('\n')
+        # print('Decission Tree:')
+        # print("Error_test^2: ", Error_test[k,2], 'With tree depth:', tc[k])
        
         
         # end of for-loop
         k+=1
+ 
+    #Calculate the mean errors of all and the mean values of the depths
+        
         
 #%% Statistical analysis
 
-# Just an example until the all models are finished
-# yhatA = yhat
-# yhatB = np.random.randint(3, size = ytrue.shape)
-
+    # since all ytrue are the same we take the baseline as the "real" ytrue
+    ytrue = ytrue_BLR
     
-# # Compute accuracy
-# stats.evaluate_1_regression(ytrue,yhat)
-
-
-# # Compare 2 models
-# stats.compare_2_regressions(ytrue,yhatA,yhatB)
+    # # Compute accuracy
+    print(modelNames[0])
+    stats.evaluate_1_regression(ytrue,yhat_BLR)
+    print('\n')
+    print(modelNames[1])
+    stats.evaluate_1_regression(ytrue,yhat_LRR)
+    print('\n')
+    print(modelNames[2])
+    stats.evaluate_1_regression(ytrue,yhat_tree)
+    
+    # # Compare 2 models
+    print('\n')
+    print(modelNames[0], 'vs.', modelNames[1])
+    stats.compare_2_regressions(ytrue,yhat_BLR,yhat_LRR)
+    print('\n')
+    print(modelNames[0], 'vs.', modelNames[2])
+    stats.compare_2_regressions(ytrue,yhat_BLR,yhat_tree)
+    print('\n')
+    print(modelNames[1], 'vs.', modelNames[2])
+    stats.compare_2_regressions(ytrue,yhat_LRR,yhat_tree)
 

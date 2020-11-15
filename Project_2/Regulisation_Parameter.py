@@ -77,9 +77,9 @@ def Linear_Regression(X,y,cvf, yhat, ytrue):
         
         opt_lambda_idx = np.argmin(test_error[f,:])
             
-        yhat = np.append(yhat,y_train_est[opt_lambda_idx,:])
-        ytrue = np.append(ytrue,y_test_est[opt_lambda_idx,:])
-    
+        yhat = np.append(yhat,y_test_est[opt_lambda_idx,:])
+        ytrue = np.append(ytrue,y_test)
+        
         f=f+1
         
         

@@ -19,6 +19,7 @@ from sklearn import model_selection
 from toolbox_02450 import rlr_validate, jeffrey_interval, mcnemar
 
 import Decission_Tree as dtree
+import Classification_Logistic_Regression as LogReg
 
 # from ANN import *
 
@@ -45,11 +46,11 @@ if __name__ == '__main__':
     
     #%% Crossvalidation
     # Create crossvalidation partition for evaluation
-    K = 5
+    K = 10
     CV = model_selection.KFold(K, shuffle=True)
     
     # Initialize variables
-    modelNames = ['Baseline', 'Decission Tree']
+    modelNames = ['Baseline', 'Decission Tree', 'Logistic Regression']
 
     Error_test = np.empty((K,len(modelNames)))
     Error_train = np.empty((K,len(modelNames)))
@@ -59,6 +60,9 @@ if __name__ == '__main__':
 
     yhat_tree = []
     ytrue_tree = []
+    
+    yhat_LR = []
+    ytrue_LR = []
 
     ytrue = []  
     yhat = []
@@ -69,7 +73,8 @@ if __name__ == '__main__':
     k=0
     for train_index, test_index in CV.split(X,y):
         # extract training and test set for current CV fold
-        print("CV fold ", k+1)
+        # print('\n')
+        # print("CV fold ", k+1)
         X_train = X[train_index]
         y_train = y[train_index]
         X_test = X[test_index]
@@ -80,34 +85,57 @@ if __name__ == '__main__':
         Error_test[k,0], yhat_temp, ytrue_temp = BLC.baseline_classification(X_train,y_train,internal_cross_validation, yhat, ytrue)
         yhat_BLC = np.append(yhat_BLC,yhat_temp)
         ytrue_BLC = np.append(ytrue_BLC,ytrue_temp)
-        print('\n')
-        print('Baseline')
-        print("Error_test^2: {:.2f}%".format(Error_test[k,0]*100))
+        # print('Baseline')
+        # print("Error_test^2: {:.2f}%".format(Error_test[k,0]*100))
+        # print('bl',yhat_BLC.shape)
         
         # Decission Tree
        
         tc = dtree.classifier_complexity(X_train, y_train, attributeNames, classNames)
-        Error_train[k,1],Error_test[k,1],yhat_temp,ytrue_temp=dtree.classifier_model(X_train, y_train, K, yhat, ytrue,tc)
+        Error_train[k,1],Error_test[k,1],yhat_temp,ytrue_temp=dtree.classifier_model(X_train, y_train, internal_cross_validation, yhat, ytrue,tc)
         yhat_tree = np.append(yhat_tree,yhat_temp)
         ytrue_tree = np.append(ytrue_tree,ytrue_temp)
-        print('\n')
-        print('Decission Tree:')
-        print("Error_test^2: ", Error_test[k,1], 'With tree depth:', tc)
+        # print('Decission Tree:')
+        # print("Error_test^2: ", Error_test[k,1], 'With tree depth:', tc)
+        # print('tree',yhat_tree.shape)
         
+        # Logistic Regression
+        Error_train[k,2],Error_test[k,2],opt_lambda[k],yhat_temp,ytrue_temp = LogReg.Logistic_Regression(X_train, y_train, internal_cross_validation, yhat, ytrue)
+        yhat_LR = np.append(yhat_LR,yhat_temp)
+        ytrue_LR = np.append(ytrue_LR,ytrue_temp)
+        # print('Logistic Regression:')
+        # print("Error_test^2: ", Error_test[k,2], 'With lambda:', opt_lambda[k])
+        # print('LR',yhat_LR.shape)
         # end of for-loop
+        
         k+=1
 
 
 #%% Statistical evaluation
 
 
-# # Just an example until the all models are finished
-# yhatA = yhat
-# yhatB = np.random.randint(3, size = ytrue.shape)
-
-# # evaluation of 1 model
-# stat.evaluate_1_classifier(ytrue,yhat)
-
-# # Compare 2 models
-# stat.compare_2_classifiers(ytrue, yhatA, yhatB)
+ # since all ytrue are the same we take the baseline as the "real" ytrue
+    ytrue = ytrue_BLC
+    
+    # # Compute accuracy
+    print(modelNames[0])
+    stats.evaluate_1_classifier(ytrue,yhat_BLC)
+    print('\n')
+    print(modelNames[1])
+    stats.evaluate_1_classifier(ytrue,yhat_LR)
+    print('\n')
+    print(modelNames[2])
+    stats.evaluate_1_classifier(ytrue,yhat_tree)
+    
+    # # Compare 2 models
+    
+    print('\n')
+    print(modelNames[0], 'vs.', modelNames[1])
+    stats.compare_2_classifiers(ytrue,yhat_BLC,yhat_LR)
+    print('\n')
+    print(modelNames[0], 'vs.', modelNames[2])
+    stats.compare_2_classifiers(ytrue,yhat_BLC,yhat_tree)
+    print('\n')
+    print(modelNames[1], 'vs.', modelNames[2])
+    stats.compare_2_classifiers(ytrue,yhat_LR,yhat_tree)
     
