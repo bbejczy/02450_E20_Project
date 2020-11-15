@@ -133,8 +133,13 @@ if __name__ == '__main__':
         # end of for-loop
         k+=1
  
-    #Calculate the mean errors of all and the mean values of the depths
-        
+    # Calculate the mean errors of all and the mean values of the depths
+    Total_Error_train = np.mean(Error_train, axis=0)    
+    Total_Error_test = np.mean(Error_test, axis=0)
+    Total_opt_lambda = np.mean(opt_lambda)
+    Total_tc = np.mean(tc)
+    
+    
         
 #%% Statistical analysis
 
