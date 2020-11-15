@@ -21,9 +21,7 @@ from toolbox_02450 import rlr_validate, jeffrey_interval, mcnemar
 import Decission_Tree as dtree
 import Classification_Logistic_Regression as LogReg
 
-# from ANN import *
-
-# error_ANN = []
+import ANN_multiClass as ANN
 
 # =============================================================================
 #     MAIN
@@ -50,7 +48,7 @@ if __name__ == '__main__':
     CV = model_selection.KFold(K, shuffle=True)
     
     # Initialize variables
-    modelNames = ['Baseline', 'Decission Tree', 'Logistic Regression']
+    modelNames = ['Baseline', 'Decission Tree', 'Logistic Regression', 'ANN Classification']
 
     Error_test = np.empty((K,len(modelNames)))
     Error_train = np.empty((K,len(modelNames)))
@@ -63,9 +61,12 @@ if __name__ == '__main__':
     
     yhat_LR = []
     ytrue_LR = []
-
-    ytrue = []  
+    
+    ytrue = []
     yhat = []
+
+    outer_h = []
+    yhat_ANNc = []
     
     opt_lambda = np.empty((K,1))
     h =  np.empty((K,1))
@@ -107,6 +108,11 @@ if __name__ == '__main__':
         # print("Error_test^2: ", Error_test[k,2], 'With lambda:', opt_lambda[k])
         # print('LR',yhat_LR.shape)
         # end of for-loop
+        
+        # ANN Classification
+        Error_test[k,3], h_temp, yhat_temp = ANN.ANN_multiClass(X_train,y_train,internal_cross_validation,C)
+        yhat_ANNc = np.append(yhat_ANNc, yhat_temp)
+        outer_h = np.append(outer_h, h_temp)
         
         k+=1
 

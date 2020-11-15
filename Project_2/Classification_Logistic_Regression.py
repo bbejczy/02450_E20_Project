@@ -98,7 +98,7 @@ def Logistic_Regression(X,y,cvf,yhat,ytrue):
         
         
         yhat = np.append(yhat,y_test_est[opt_lambda_idx,:])
-        print('yhat',yhat.shape)
+        # print('yhat',yhat.shape)
         ytrue = np.append(ytrue,y_test)
 
         
