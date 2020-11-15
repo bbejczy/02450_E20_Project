@@ -62,7 +62,7 @@ def Logistic_Regression(X,y,cvf,yhat,ytrue):
         
         
         # Fit regularized logistic regression model to training data 
-        lambda_interval = np.logspace(-4, 8, 20)
+        lambda_interval = np.logspace(-8, 8, 20)
         train_error_rate = np.zeros(len(lambda_interval))
         test_error_rate = np.zeros(len(lambda_interval))
         coefficient_norm = np.zeros(len(lambda_interval))
@@ -81,8 +81,8 @@ def Logistic_Regression(X,y,cvf,yhat,ytrue):
             y_train_est[k,:] = mdl.predict(X_train).T
             y_test_est[k,:] = mdl.predict(X_test).T
             
-            train_error_rate[k] = np.sum(y_train_est != y_train) / len(y_train)
-            test_error_rate[k] = np.sum(y_test_est != y_test) / len(y_test)
+            train_error_rate[k] = np.sum(y_train_est[k,:] != y_train) / len(y_train)
+            test_error_rate[k] = np.sum(y_test_est[k,:] != y_test) / len(y_test)
         
             w_est = mdl.coef_[0] 
             coefficient_norm[k] = np.sqrt(np.sum(w_est**2))

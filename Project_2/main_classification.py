@@ -78,6 +78,7 @@ if __name__ == '__main__':
     
     opt_lambda = np.empty((K,1))
     h =  np.empty((K,1))
+    tc = np.empty((K,1))
     
     k=0
     for train_index, test_index in CV.split(X,y):
@@ -100,8 +101,8 @@ if __name__ == '__main__':
         
         # Decission Tree
        
-        tc = dtree.classifier_complexity(X_train, y_train, attributeNames, classNames)
-        Error_train[k,1],Error_test[k,1],yhat_temp,ytrue_temp=dtree.classifier_model(X_train, y_train, internal_cross_validation, yhat, ytrue,tc)
+        tc[k] = dtree.classifier_complexity(X_train, y_train, attributeNames, classNames)
+        Error_train[k,1],Error_test[k,1],yhat_temp,ytrue_temp=dtree.classifier_model(X_train, y_train, internal_cross_validation, yhat, ytrue,tc[k])
         yhat_tree = np.append(yhat_tree,yhat_temp)
         ytrue_tree = np.append(ytrue_tree,ytrue_temp)
         # print('Decission Tree:')
@@ -123,8 +124,14 @@ if __name__ == '__main__':
         outer_h = np.append(outer_h, h_temp)
         
         k+=1
-
-
+        
+    
+    # Calculate the mean errors of all and the mean values of the depths
+    Total_Error_train = np.mean(Error_train, axis=0)    
+    Total_Error_test = np.mean(Error_test, axis=0)
+    Total_opt_lambda = np.mean(opt_lambda)
+    Total_tc = np.mean(tc)
+    
 #%% Statistical evaluation
 
 
