@@ -36,7 +36,7 @@ def ANN_multiClass(X,y,K,C):
     CV = model_selection.KFold(K, shuffle=False)
     #%% Model fitting and prediction
     
-    h = range(7,8,1)
+    h = range(1,10,2)
     
     mat_error = np.zeros((K,len(h)))
     

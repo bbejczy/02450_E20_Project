@@ -75,8 +75,8 @@ if __name__ == '__main__':
     # Initialize variables
     modelNames = ['Baseline', 'Linear Regression with lambda', 'Decission Tree','ANN']
     
-    Error_test = np.empty((K,len(modelNames)))
-    Error_train = np.empty((K,len(modelNames)))
+    Error_test = np.zeros((K,len(modelNames)))
+    Error_train = np.zeros((K,len(modelNames)))
     
     yhat_temp = []
     ytrue_temp = []
@@ -137,7 +137,7 @@ if __name__ == '__main__':
         # print("Error_test^2: ", Error_test[k,2], 'With tree depth:', tc[k])
        
         # ANN Regression
-        Error_test[k, 3], h, yhat_temp = ANN.ANN_reg(X_train, y_train, M, attributeNames, classNames, K) 
+        Error_test[k, 3], h[k], yhat_temp = ANN.ANN_reg(X_train, y_train, M, attributeNames, classNames, K) 
         yhat_ANN = np.append(yhat_ANN, yhat_temp)
         
         # end of for-loop
@@ -154,26 +154,39 @@ if __name__ == '__main__':
 #%% Statistical analysis
 
     # since all ytrue are the same we take the baseline as the "real" ytrue
-    ytrue = ytrue_BLR
-    
-    # # Compute accuracy
-    print(modelNames[0])
-    stats.evaluate_1_regression(ytrue,yhat_BLR)
-    print('\n')
-    print(modelNames[1])
-    stats.evaluate_1_regression(ytrue,yhat_LRR)
-    print('\n')
-    print(modelNames[2])
-    stats.evaluate_1_regression(ytrue,yhat_tree)
-    
-    # # Compare 2 models
-    print('\n')
-    print(modelNames[0], 'vs.', modelNames[1])
-    stats.compare_2_regressions(ytrue,yhat_BLR,yhat_LRR)
-    print('\n')
-    print(modelNames[0], 'vs.', modelNames[2])
-    stats.compare_2_regressions(ytrue,yhat_BLR,yhat_tree)
-    print('\n')
-    print(modelNames[1], 'vs.', modelNames[2])
-    stats.compare_2_regressions(ytrue,yhat_LRR,yhat_tree)
+ytrue = ytrue_BLR
 
+# # Compute accuracy
+print(modelNames[0])
+stats.evaluate_1_regression(ytrue,yhat_BLR)
+print('\n')
+print(modelNames[1])
+stats.evaluate_1_regression(ytrue,yhat_LRR)
+print('\n')
+print(modelNames[2])
+stats.evaluate_1_regression(ytrue,yhat_tree)
+print('\n')
+print(modelNames[3])
+stats.evaluate_1_regression(ytrue,yhat_ANN)
+
+
+# # Compare 2 models
+print('\n')
+print(modelNames[0], 'vs.', modelNames[1])
+stats.compare_2_regressions(ytrue,yhat_BLR,yhat_LRR)
+print('\n')
+print(modelNames[0], 'vs.', modelNames[2])
+stats.compare_2_regressions(ytrue,yhat_BLR,yhat_tree)
+print('\n')
+print(modelNames[1], 'vs.', modelNames[2])
+stats.compare_2_regressions(ytrue,yhat_LRR,yhat_tree)
+
+print('\n')
+print(modelNames[0], 'vs.', modelNames[3])
+stats.compare_2_regressions(ytrue,yhat_BLR,yhat_ANN)
+
+print('\n')
+print(modelNames[1], 'vs.', modelNames[3])
+stats.compare_2_regressions(ytrue,yhat_LRR,yhat_ANN)
+    
+    

@@ -48,8 +48,8 @@ def ANN_reg(X, y, M, attributenNames, classNames, K):
     M = X.shape[1]
     # Parameters for neural network classifier
     #n_hidden_units = 4      # number of hidden units
-    n_replicates = 4        # number of networks trained in each k-fold
-    max_iter = 3000
+    n_replicates = 1        # number of networks trained in each k-fold
+    max_iter = 1000
     
     yhat =[]
     
@@ -70,7 +70,7 @@ def ANN_reg(X, y, M, attributenNames, classNames, K):
     
     # print('Training model of type:\n\n{}\n'.format(str(model())))
     errors = [] # make a list for storing generalizaition error in each loop
-    h = range(7,8,1)
+    h = range(1,10,2)
     
     for (k, (train_index, test_index)) in enumerate(CV.split(X,y)): 
         #print("Run fold {}".format(k+1))

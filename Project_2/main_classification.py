@@ -83,8 +83,8 @@ if __name__ == '__main__':
     k=0
     for train_index, test_index in CV.split(X,y):
         # extract training and test set for current CV fold
-        # print('\n')
-        # print("CV fold ", k+1)
+        print('\n')
+        print("CV fold ", k+1)
         X_train = X[train_index]
         y_train = y[train_index]
         X_test = X[test_index]
@@ -147,6 +147,9 @@ if __name__ == '__main__':
     print('\n')
     print(modelNames[2])
     stats.evaluate_1_classifier(ytrue,yhat_tree)
+    print('\n')
+    print(modelNames[3])
+    stats.evaluate_1_classifier(ytrue,yhat_ANNc)
     
     # # Compare 2 models
     
@@ -159,4 +162,11 @@ if __name__ == '__main__':
     print('\n')
     print(modelNames[1], 'vs.', modelNames[2])
     stats.compare_2_classifiers(ytrue,yhat_LR,yhat_tree)
+    print('\n')
+    print(modelNames[0], 'vs.', modelNames[3])
+    stats.compare_2_classifier(ytrue,yhat_BLC,yhat_ANNc)
+
+    print('\n')
+    print(modelNames[1], 'vs.', modelNames[3])
+    stats.compare_2_classifier(ytrue,yhat_LR,yhat_ANNc)
     
