@@ -139,6 +139,7 @@ if __name__ == '__main__':
         # ANN Regression
         Error_test[k, 3], h[k], yhat_temp = ANN.ANN_reg(X_train, y_train, M, attributeNames, classNames, K) 
         yhat_ANN = np.append(yhat_ANN, yhat_temp)
+
         
         # end of for-loop
         k+=1
@@ -148,7 +149,7 @@ if __name__ == '__main__':
     Total_Error_test = np.mean(Error_test, axis=0)
     Total_opt_lambda = np.mean(opt_lambda)
     Total_tc = np.mean(tc)
-    
+    Total_h = np.mean(h)
     
         
 #%% Statistical analysis

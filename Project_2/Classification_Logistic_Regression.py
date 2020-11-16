@@ -50,8 +50,13 @@ def Logistic_Regression(X,y,cvf,yhat,ytrue):
     # Create crossvalidation 
     
     CV = model_selection.KFold(cvf,shuffle=False)
+    Error_train_fold = np.zeros(cvf)
+    Error_test_fold = np.zeros(cvf)
+    opt_lambda_fold = np.zeros(cvf)
+    opt_test_error_rate = np.zeros(cvf)
+    opt_train_error_rate = np.zeros(cvf)
     
-    
+    f = 0
     
     for train_index, test_index in CV.split(X,y):
                 
@@ -71,7 +76,7 @@ def Logistic_Regression(X,y,cvf,yhat,ytrue):
         y_test_est = np.empty((len(lambda_interval),len(y_test)))
         
         
-        f = 0
+        
         
         for k in range(0, len(lambda_interval)):
             mdl = LogisticRegression(penalty='l2', C= 1/lambda_interval[k] )
@@ -90,35 +95,22 @@ def Logistic_Regression(X,y,cvf,yhat,ytrue):
         
         min_error = np.min(test_error_rate)
         
-        Error_test = test_error_rate.mean()
-        Error_train = train_error_rate.mean()
+        # Error_test_fold[f] = test_error_rate.mean()
+        # Error_train_fold[f] = train_error_rate.mean()
         
         opt_lambda_idx = np.argmin(test_error_rate)
-        opt_lambda = lambda_interval[opt_lambda_idx]
+        opt_train_error_rate[f] = np.min(train_error_rate)
+        opt_test_error_rate[f] = np.min(test_error_rate)
+        opt_lambda_fold[f] = lambda_interval[opt_lambda_idx]
         
         
         yhat = np.append(yhat,y_test_est[opt_lambda_idx,:])
         # print('yhat',yhat.shape)
         ytrue = np.append(ytrue,y_test)
 
-        
         f+=1
         
-        # plt.figure(figsize=(8,8))
-        # #plt.plot(np.log10(lambda_interval), train_error_rate*100)
-        # #plt.plot(np.log10(lambda_interval), test_error_rate*100)
-        # #plt.plot(np.log10(opt_lambda), min_error*100, 'o')
-        # plt.semilogx(lambda_interval, train_error_rate*100,'x-')
-        # plt.semilogx(lambda_interval, test_error_rate*100,'x-')
-        # plt.semilogx(opt_lambda, min_error*100, 'o')
-        # plt.text(1e-8, 3, "Minimum test error: " + str(np.round(min_error*100,2)) + ' % at 1e' + str(np.round(np.log10(opt_lambda),2)))
-        # plt.xlabel('Regularization strength, $\log_{10}(\lambda)$')
-        # plt.ylabel('Error rate (%)')
-        # plt.title('Classification error')
-        # plt.legend(['Training error','Test error','Test minimum'],loc='upper right')
-        # plt.ylim([0, 10])
-        # plt.grid()
-        # plt.show()    
+        
         
         # plt.figure(figsize=(8,8))
         # plt.semilogx(lambda_interval, coefficient_norm,'k')
@@ -128,6 +120,30 @@ def Logistic_Regression(X,y,cvf,yhat,ytrue):
         # plt.grid()
         # plt.show()
         
+    Error_test = np.mean(opt_test_error_rate)
+    Error_train = np.mean(opt_train_error_rate)
+    
+    unique_lambdas, unique_lambdas_count = np.unique(opt_lambda_fold, return_counts=True)
+    
+    opt_lambda = unique_lambdas[np.argmax(unique_lambdas_count)]
+    
+    # if f == cvf:
+    #     plt.figure(figsize=(8,8))
+    #     #plt.plot(np.log10(lambda_interval), train_error_rate*100)
+    #     #plt.plot(np.log10(lambda_interval), test_error_rate*100)
+    #     #plt.plot(np.log10(opt_lambda), min_error*100, 'o')
+    #     plt.semilogx(lambda_interval, train_error_rate*100,'x-')
+    #     plt.semilogx(lambda_interval, test_error_rate*100,'x-')
+    #     plt.semilogx(opt_lambda, min_error*100, 'o')
+    #     plt.text(1e-8, 3, "Minimum test error: " + str(np.round(min_error*100,2)) + ' % at 1e' + str(np.round(np.log10(opt_lambda),2)))
+    #     plt.xlabel('Regularization strength, $\log_{10}(\lambda)$')
+    #     plt.ylabel('Error rate (%)')
+    #     plt.title('Classification error')
+    #     plt.legend(['Training error','Test error','Test minimum'],loc='upper right')
+    #     plt.ylim([0, 10])
+    #     plt.grid()
+    #     plt.show()    
+    
     return Error_train, Error_test, opt_lambda, yhat, ytrue
 
 
