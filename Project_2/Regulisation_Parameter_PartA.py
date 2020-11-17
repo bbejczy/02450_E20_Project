@@ -28,7 +28,7 @@ import dataProcessing as dP
 raw_data,X,y,C,N,M,cols = importData(filename) #importing the raw data from the file
 attributeNames = [names for names in attributeNames if names != 'ID'  ]
 
-regression_attribute = 1
+regression_attribute = 10
 y = X[:,regression_attribute]
 X_cols = list(range(0,regression_attribute)) + list(range(regression_attribute+1,len(attributeNames)))
 

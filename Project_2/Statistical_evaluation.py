@@ -97,6 +97,28 @@ def compare_2_regressions(ytrue,yhatA,yhatB):
     p = st.t.cdf( -np.abs( np.mean(z) )/st.sem(z), df=len(z)-1)  # p-value
     
     print('z:', np.mean(z), 'CI: ',(CI),'p-value: ', (p))
+    
+    
+def ttest_onemodel(y_true, yhat, loss_norm_p=1, alpha=0.05):
+    # perform statistical comparison of the models
+    # compute z with squared error.
+
+    zA = np.abs(y_true - yhat) ** loss_norm_p
+    CI = st.t.interval(1 - alpha, df=len(zA) - 1, loc=np.mean(zA), scale=st.sem(zA))
+    return np.mean(zA), CI
+
+def ttest_twomodels(y_true, yhatA, yhatB, alpha=0.05, loss_norm_p=1):
+    zA = np.abs(y_true - yhatA) ** loss_norm_p
+    # Compute confidence interval of z = zA-zB and p-value of Null hypothesis
+    zB = np.abs(y_true - yhatB) ** loss_norm_p
+
+    z = zA - zB
+    CI = st.t.interval(1 - alpha, len(z) - 1, loc=np.mean(z), scale=st.sem(z))  # Confidence interval
+    p = 2*st.t.cdf(-np.abs(np.mean(z)) / st.sem(z), df=len(z) - 1)  # p-value
+    
+    print('z:', np.mean(z), 'CI: ',(CI),'p-value: ', (p))
+    
+    return np.mean(z), CI, p
 
 #%%Importing data
 if __name__ == '__main__':

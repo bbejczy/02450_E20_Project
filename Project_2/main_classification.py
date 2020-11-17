@@ -119,9 +119,8 @@ if __name__ == '__main__':
         # end of for-loop
         
         # ANN Classification
-        # Error_test[k,3], h_temp, yhat_temp = ANN.ANN_multiClass(X_train,y_train,internal_cross_validation,C)
-        # yhat_ANNc = np.append(yhat_ANNc, yhat_temp)
-        # outer_h = np.append(outer_h, h_temp)
+        Error_test[k,3], h[k], yhat_temp = ANN.ANN_multiClass(X_train,y_train,internal_cross_validation,C)
+        yhat_ANNc = np.append(yhat_ANNc, yhat_temp)
         
         k+=1
         
@@ -164,9 +163,10 @@ if __name__ == '__main__':
     stats.compare_2_classifiers(ytrue,yhat_LR,yhat_tree)
     print('\n')
     print(modelNames[0], 'vs.', modelNames[3])
-    stats.compare_2_classifier(ytrue,yhat_BLC,yhat_ANNc)
-
+    stats.compare_2_classifiers(ytrue,yhat_BLC,yhat_ANNc)
     print('\n')
-    print(modelNames[1], 'vs.', modelNames[3])
-    stats.compare_2_classifier(ytrue,yhat_LR,yhat_ANNc)
+    print(modelNames[2], 'vs.', modelNames[3])
+    stats.compare_2_classifiers(ytrue,yhat_LR,yhat_ANNc)
+    
+
     

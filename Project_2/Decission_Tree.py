@@ -70,6 +70,7 @@ def classifier_complexity(X,y, attributeNames, classNames):
     # plt.figure()
     # plt.plot(tc, Error_train,'x-')
     # plt.plot(tc, Error_test,'x-')
+    # plt.plot(tc[np.argmin(Error_test)],np.min(Error_test),'o')
     # plt.xlabel('Model complexity (max tree depth)')
     # plt.ylabel('Error (misclassification rate, CV K={0})'.format(K))
     # plt.legend(['Error_train','Error_test'])
@@ -87,7 +88,7 @@ def classifier_complexity(X,y, attributeNames, classNames):
     # plot tree, not exactly the same but shape is right
     # classifier = DecisionTreeClassifier(max_depth= tc_opt)
     # classifier = classifier.fit(X_train,y_train)
-    # plt.figure(dpi = 500)
+    # plt.figure(dpi=200)
     # plot_tree(classifier, filled=True, feature_names=attributeNames, class_names=classNames)
     # plt.show()
     
@@ -208,8 +209,9 @@ def regressor_complexity(X,y,attributeNames,classNames):
     # plt.figure()
     # plt.plot(tc, Error_train,'x-')
     # plt.plot(tc, Error_test,'x-')
+    # plt.plot(tc[np.argmin(Error_test)],np.min(Error_test),'o')
     # plt.xlabel('Model complexity (max tree depth)')
-    # plt.ylabel('MSE for K={0} CV)'.format(K))
+    # plt.ylabel('Error (misclassification rate, CV K={0})'.format(K))
     # plt.legend(['Error_train','Error_test'])
     # plt.grid()
     # plt.show()
@@ -344,6 +346,12 @@ if __name__ == '__main__':
     #%% Classification
     
     tc = classifier_complexity(X, y, attributeNames, classNames)
+    
+    classifier = DecisionTreeClassifier()
+    classifier = classifier.fit(X,y)
+    plt.figure()
+    plot_tree(classifier, filled=True, feature_names=attributeNames, class_names=classNames)
+    plt.show()
     
     K = 10
     yhat = []

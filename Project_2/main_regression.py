@@ -137,8 +137,8 @@ if __name__ == '__main__':
         # print("Error_test^2: ", Error_test[k,2], 'With tree depth:', tc[k])
        
         # ANN Regression
-        Error_test[k, 3], h[k], yhat_temp = ANN.ANN_reg(X_train, y_train, M, attributeNames, classNames, K) 
-        yhat_ANN = np.append(yhat_ANN, yhat_temp)
+        # Error_test[k, 3], h[k], yhat_temp = ANN.ANN_reg(X_train, y_train, M, attributeNames, classNames, K) 
+        # yhat_ANN = np.append(yhat_ANN, yhat_temp)
 
         
         # end of for-loop
@@ -181,11 +181,9 @@ stats.compare_2_regressions(ytrue,yhat_BLR,yhat_tree)
 print('\n')
 print(modelNames[1], 'vs.', modelNames[2])
 stats.compare_2_regressions(ytrue,yhat_LRR,yhat_tree)
-
 print('\n')
 print(modelNames[0], 'vs.', modelNames[3])
 stats.compare_2_regressions(ytrue,yhat_BLR,yhat_ANN)
-
 print('\n')
 print(modelNames[1], 'vs.', modelNames[3])
 stats.compare_2_regressions(ytrue,yhat_LRR,yhat_ANN)
